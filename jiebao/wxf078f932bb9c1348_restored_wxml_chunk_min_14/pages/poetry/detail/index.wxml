@@ -1,0 +1,22 @@
+<van-sticky>
+	<van-nav-bar leftText="返回" title="粤语古诗词" back="true" leftArrow="true" bind:click-left="navBack" border="false" customClass="custom-nav" customStyle="background:#f7f2ea;">	</van-nav-bar>
+</van-sticky>
+<view class="container">
+	<view class="article">
+		<view class="content">
+			<view class="poetry-hero">
+				<view class="poetry-hero__title">
+					未命名诗词
+				</view>
+			</view>
+			<view class="article-empty">
+				<text>
+					暂无正文
+				</text>
+			</view>
+		</view>
+	</view>
+</view>
+<audio-player-bar isPlaying="" title="诗词音频" audioSrc="" bind:playtoggle="handlePlayToggle" bind:progresschange="handleProgressChange" bind:progressdrag="handleProgressDrag" durationLabel="" episodeLoading="" bind:favorite="handleToggleFavorite" bind:progressdragstart="handleProgressDragStart" paragraphPlaybackLabel="" isFavorite="" loadError="" bind:progressdragend="handleProgressDragEnd" bind:setting="toggleSettingPanel" bind:stoploop="handleStopLoop" currentTimeLabel="" progressValue=""></audio-player-bar>
+<subtitle-settings-sheet bind:loopintervalchange="onLoopIntervalChange" enableDirectReadPoetryOption="true" enableWordTranslationOption="false" loopIntervalSeconds="" autoScroll="" bind:loopcountchange="onLoopCountChange" bind:close="toggleSettingPanel" enableSentenceTranslationOption="false" show="" showSentenceTranslation="" bind:settingchange="onSettingChange" directReadPoetry="" showWordTranslation="" singleLoopCount="" enableAutoScrollOption="false" showPinyin=""></subtitle-settings-sheet>
+<episode-drawer activeEpisodeId="" bind:close="handleEpisodeListClose" bind:select="handleEpisodeSelect" courseInfo="" episodes="" show=""></episode-drawer>

@@ -1,0 +1,48 @@
+.notice-bar {
+    background: linear-gradient(90deg,#ffe1a0,#ffe39b);
+    border: 1rpx solid #fff;
+    border-radius: 35rpx;
+    box-sizing: border-box;
+    height: 70rpx;
+    padding-left: 15rpx;
+    padding-right: 15rpx;
+    width: 100%;
+}
+
+.content,.notice-bar {
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.content {
+    height: 100%;
+    overflow: hidden;
+    width: 657rpx;
+}
+
+.content-text {
+    color: #9d5c05;
+    font-family: SourceHanSerifCN;
+    font-size: 24rpx;
+    font-weight: 500;
+    line-height: 24rpx;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.speaker {
+    height: 40rpx;
+    margin-right: 10rpx;
+    width: 40rpx;
+}
+
+.close {
+    height: 14rpx;
+    margin-left: 15rpx;
+    margin-right: 15rpx;
+    width: 14rpx;
+}
+

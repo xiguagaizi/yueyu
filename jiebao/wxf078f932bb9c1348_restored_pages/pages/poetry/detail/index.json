@@ -1,0 +1,11 @@
+{
+    "usingComponents": {
+        "audio-player-bar": "../../../components/audio-player-bar/index",
+        "episode-drawer": "../../../components/episode-drawer/index",
+        "ruby-segment": "../../../components/ruby-segment/index",
+        "subtitle-settings-sheet": "../../../components/subtitle-settings-sheet/index",
+        "van-icon": "../../../miniprogram_npm/@vant/weapp/icon/index",
+        "van-nav-bar": "../../../miniprogram_npm/@vant/weapp/nav-bar/index",
+        "van-sticky": "../../../miniprogram_npm/@vant/weapp/sticky/index"
+    }
+}

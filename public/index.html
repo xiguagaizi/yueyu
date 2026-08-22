@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>粤语纠音台 · cantonese.ai 发音评分</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗣️</text></svg>"
+    />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">粤</span>
+        <div>
+          <h1>粤语纠音台</h1>
+          <p class="sub">小打卡课文 · cantonese.ai 发音评分 · 逐音节声调纠错</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <label class="field">
+          <span>评分语言</span>
+          <select id="language">
+            <option value="cantonese" selected>粤语 (≥90 合格)</option>
+            <option value="mandarin">普通话 (≥70)</option>
+            <option value="english">English (≥70)</option>
+          </select>
+        </label>
+        <button id="keyBtn" class="ghost" type="button">API Key</button>
+      </div>
+    </header>
+
+    <dialog id="keyDialog">
+      <form method="dialog">
+        <h3>API Key</h3>
+        <p class="muted" id="keyStatus">检查中…</p>
+        <input id="apiKey" type="password" placeholder="临时填一个 cantonese.ai 的 key" autocomplete="off" />
+        <p class="muted tiny">
+          填在这里只存浏览器 localStorage，随请求转发给本地服务端。更稳妥的做法是写进项目根目录的 <code>.env</code>：<code>CANTONESE_AI_API_KEY=xxx</code>，然后重启服务。
+        </p>
+        <menu>
+          <button value="clear" class="ghost" type="submit">清除</button>
+          <button value="save" class="primary" type="submit">保存</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <main class="layout">
+      <aside class="panel lessons">
+        <div class="panel-head">
+          <h2>课文</h2>
+          <span class="count" id="lessonCount"></span>
+        </div>
+        <input id="search" class="search" type="search" placeholder="搜句子 / 课名，例：问路、几多钱" />
+        <div class="lesson-picker">
+          <select id="daySelect"></select>
+        </div>
+        <ol id="sentenceList" class="sentences"></ol>
+      </aside>
+
+      <section class="panel workbench">
+        <div class="target" id="target">
+          <div class="target-head">
+            <span class="tag" id="targetTag">未选句子</span>
+            <div class="mode-switch">
+              <button id="modeSingle" class="on" type="button">单句</button>
+              <button id="modeLesson" type="button">整课连读</button>
+              <button id="randomBtn" class="ghost tiny-btn" type="button">随机一句</button>
+            </div>
+          </div>
+          <p class="target-text" id="targetText">从左边挑一句开始练</p>
+          <p class="target-raw" id="targetRaw"></p>
+          <ol class="target-list" id="targetList" hidden></ol>
+        </div>
+
+        <div class="row">
+          <div class="card">
+            <h3>1 · 听示范</h3>
+            <audio id="demoAudio" controls preload="none"></audio>
+            <div class="controls">
+              <label class="field inline">
+                <span>倍速</span>
+                <select id="rate">
+                  <option value="0.6">0.6×</option>
+                  <option value="0.75">0.75×</option>
+                  <option value="1" selected>1×</option>
+                  <option value="1.25">1.25×</option>
+                </select>
+              </label>
+            </div>
+            <p class="muted tiny" id="demoHint">整课连读，用来跟读。</p>
+          </div>
+
+          <div class="card">
+            <h3>2 · 录你的</h3>
+            <div class="rec-row">
+              <button id="recBtn" class="primary big" type="button">🎤 开始录音</button>
+              <span class="timer" id="timer">00:00</span>
+            </div>
+            <div class="meter"><div class="meter-fill" id="meter"></div></div>
+            <div class="controls">
+              <button id="uploadBtn" class="ghost" type="button">上传音频文件</button>
+              <input id="fileInput" type="file" accept=".wav,.mp3,.m4a,.flac,.ogg,audio/*" hidden />
+            </div>
+            <audio id="myAudio" controls hidden></audio>
+            <p class="muted tiny" id="takeInfo"></p>
+          </div>
+        </div>
+
+        <div class="submit-row">
+          <button id="scoreBtn" class="primary big" type="button" disabled>3 · 送去评分</button>
+          <span class="muted tiny" id="status"></span>
+        </div>
+
+        <div id="result" class="result" hidden></div>
+
+        <div class="card history-card">
+          <div class="panel-head">
+            <h3>练习记录 <span class="muted tiny">点一条展开当时的纠音详情</span></h3>
+            <button id="clearHistory" class="ghost tiny-btn" type="button">清空</button>
+          </div>
+          <ul id="history" class="history"></ul>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

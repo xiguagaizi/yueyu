@@ -1,0 +1,3 @@
+<view class="van-row custom-class" style="">
+	<slot>	</slot>
+</view>

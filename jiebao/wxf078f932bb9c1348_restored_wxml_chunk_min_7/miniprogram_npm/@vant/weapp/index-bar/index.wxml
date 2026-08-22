@@ -1,0 +1,3 @@
+<view class="van-index-bar">
+	<slot>	</slot>
+</view>

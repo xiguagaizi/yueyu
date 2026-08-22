@@ -1,0 +1,3 @@
+<view bind:tap="onClick" class="custom-class van-image" style="">
+	<image showMenuByLongpress="" src="" webp="" bind:error="onError" bind:load="onLoad" class="image-class van-image__img" lazyLoad="" mode="">	</image>
+</view>

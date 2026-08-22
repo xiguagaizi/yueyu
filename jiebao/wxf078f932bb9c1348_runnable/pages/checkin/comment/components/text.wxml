@@ -1,0 +1,4 @@
+<block wx:for="{{words}}" wx:key="index">
+  <text wx:if="{{item.isPin}}" class="pin" data-pin="{{item.value}}" bindtap="play">{{item.value}}</text>
+  <text wx:else>{{item.value}}</text>
+</block>

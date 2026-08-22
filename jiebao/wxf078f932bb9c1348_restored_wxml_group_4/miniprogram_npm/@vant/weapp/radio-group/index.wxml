@@ -1,0 +1,3 @@
+<view class="van-radio-group">
+	<slot>	</slot>
+</view>

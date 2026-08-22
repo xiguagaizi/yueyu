@@ -1,0 +1,10 @@
+<view class="comp-ruby ">
+	<view class="comp-ruby-pin">
+		<ruby-base pinyin="true" target="">		</ruby-base>
+	</view>
+	<view class="comp-ruby-zi">
+		<text>
+			true
+		</text>
+	</view>
+</view>

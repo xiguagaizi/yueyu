@@ -1,0 +1,3 @@
+<view class="custom-class van-collapse ">
+	<slot>	</slot>
+</view>

@@ -1,0 +1,1 @@
+<van-picker activeClass="active-class" columnClass="column-class" itemHeight="" showToolbar="" bind:cancel="onCancel" bind:confirm="onConfirm" columns="" title="" toolbarClass="toolbar-class" bind:change="onChange" class="van-datetime-picker" confirmButtonText="" visibleItemCount="" cancelButtonText=""></van-picker>

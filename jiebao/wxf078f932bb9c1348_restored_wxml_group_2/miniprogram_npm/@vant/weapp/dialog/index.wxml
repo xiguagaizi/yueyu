@@ -1,0 +1,1 @@
+<van-popup bind:close="onClickOverlay" customClass="van-dialog van-dialog-- custom-class" customStyle="width: ;" closeOnClickOverlay="" overlay="" overlayStyle="" show="" transition="" zIndex=""></van-popup>

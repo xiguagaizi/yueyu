@@ -1,0 +1,25 @@
+<van-sticky id="top">
+	<van-nav-bar customClass="custom-nav" leftText="返回" title="打卡纠音（体验版）" leftArrow="true" bind:click-left="navBack" border="false">	</van-nav-bar>
+</van-sticky>
+<van-popup closeable="true" customStyle="height: 560rpx" position="bottom" show="" zIndex="9999" round="true" bind:close="onClose">
+	<view class="form-panel">
+		<view class="main">
+			<view class="progress">
+				<van-button round="true" bind:tap="recordHandle" customStyle="padding: 10px" icon="https://s.cantonesepi.top/pi/images/mp/home/microphone.png" size="large" type="info">
+					点击开始录音
+				</van-button>
+			</view>
+			<player inactive="true" duration="NaN" id="player" src="">			</player>
+			<view class="rec-tips">
+				提示：录音完成后请试听确认无误
+			</view>
+			<van-field showWordLimit="true" type="textarea" autosize="map[maxHeight:100 minHeight:80]" bind:change="onChange" bind:focus="updateCursorPos" clearable="true" maxlength="50" autoFocus="true" placeholder="请输入文字，限50字内。" value="">			</van-field>
+		</view>
+		<view class="btn-bar">
+			<van-button block="true" round="true" bind:tap="send" type="primary">
+				发 送
+			</van-button>
+		</view>
+	</view>
+</van-popup>
+<van-action-sheet bind:select="onSelect" cancelText="取消" closeOnClickOverlay="true" show="" actions="" bind:cancel="onClose"></van-action-sheet>

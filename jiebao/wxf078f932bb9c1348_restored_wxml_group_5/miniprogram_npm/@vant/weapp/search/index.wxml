@@ -1,0 +1,6 @@
+<view class="van-search custom-class" style="background:">
+	<view class="van-search__content">
+		<slot name="label">		</slot>
+		<van-field bind:confirm="onSearch" clearTrigger="" leftIcon="" type="search" bind:focus="onFocus" confirmType="search" disabled="" class="van-search__field field-class" customStyle="padding: 5px 10px 5px 0; background-color: transparent;" placeholderStyle="" rightIcon="" focus="" inputClass="input-class" bind:clear="onClear" clearable="" bind:blur="onBlur" bind:click-input="onClickInput" error="" placeholder="" readonly="" bind:change="onChange" border="false" clearIcon="" cursorSpacing="" inputAlign="" maxlength="" value="">		</van-field>
+	</view>
+</view>

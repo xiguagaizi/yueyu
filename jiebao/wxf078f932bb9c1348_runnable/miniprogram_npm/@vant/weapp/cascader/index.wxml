@@ -1,0 +1,1 @@
+<van-tabs tabClass="van-cascader__tab" wrapClass="van-cascader__tabs-wrap" active="" bind:click="onClickTab" border="false" color="" customClass="van-cascader__tabs" swipeable=""></van-tabs>

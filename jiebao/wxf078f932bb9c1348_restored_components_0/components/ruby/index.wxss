@@ -1,0 +1,13 @@
+.comp-ruby view {
+    text-align: center;
+}
+
+.comp-ruby-pin {
+    color: #666;
+    font-size: 16px;
+}
+
+.comp-ruby-zi {
+    font-size: 22px;
+}
+

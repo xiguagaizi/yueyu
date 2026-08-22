@@ -1,0 +1,5 @@
+<view data-key="cell" bindtouchcancel="endDrag" bindtouchend="endDrag" bindtouchstart="startDrag" capture-bind:touchmove="onDrag" catchtap="onClick" catchtouchmove="" class="van-swipe-cell custom-class">
+	<view style="">
+		<slot>		</slot>
+	</view>
+</view>

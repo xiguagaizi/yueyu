@@ -1,0 +1,522 @@
+{
+    "subPackages": [
+        {
+            "root": "pages/checkin/"
+        },
+        {
+            "root": "pages/my/"
+        },
+        {
+            "root": "pages/songs/"
+        },
+        {
+            "root": "pages/sph/"
+        },
+        {
+            "root": "pages/feedback/"
+        },
+        {
+            "root": "pages/tools/"
+        },
+        {
+            "root": "pages/admin/"
+        },
+        {
+            "root": "pages/learning/"
+        },
+        {
+            "root": "pages/pay/"
+        },
+        {
+            "root": "pages/correction/"
+        },
+        {
+            "root": "donutAuthorize__/",
+            "independent": true
+        }
+    ],
+    "entryPagePath": "pages/index/index.html",
+    "pages": [
+        "pages/index/index",
+        "pages/order/list/index",
+        "pages/vocabulary/detail/index",
+        "pages/webview/index",
+        "pages/app/login/index",
+        "pages/app/native-login/index",
+        "pages/voice/index/index",
+        "pages/voice/detail/index",
+        "pages/app/iap/index",
+        "pages/app/pay/index",
+        "pages/video/list/index",
+        "pages/video/detail/index",
+        "pages/audio/index/index",
+        "pages/audio/list/index",
+        "pages/audio/detail/index",
+        "pages/poetry/detail/index",
+        "pages/checkin/index/index",
+        "pages/checkin/my/index",
+        "pages/checkin/history/index",
+        "pages/checkin/comment/index",
+        "pages/checkin/help/index",
+        "pages/my/index/index",
+        "pages/my/favorites/index",
+        "pages/my/history/index",
+        "pages/my/user/setting",
+        "pages/my/msg/index",
+        "pages/my/notification/index",
+        "pages/my/notification/detail/index",
+        "pages/my/pinyin/index",
+        "pages/my/pinyin-style/index",
+        "pages/my/sound/index",
+        "pages/my/audio-setting/index",
+        "pages/my/account/index",
+        "pages/songs/search/index",
+        "pages/songs/list/index",
+        "pages/songs/detail/index",
+        "pages/sph/index",
+        "pages/feedback/index/index",
+        "pages/feedback/list/index",
+        "pages/feedback/detail/index",
+        "pages/tools/jyutping/index",
+        "pages/tools/translate/index",
+        "pages/tools/translate/favorites/list",
+        "pages/tools/text-to-speech/index",
+        "pages/tools/text-to-jyutping/index/index",
+        "pages/tools/text-to-jyutping/preview/index",
+        "pages/tools/text-to-jyutping/list/index",
+        "pages/tools/text-to-jyutping/detail/index",
+        "pages/tools/text-to-jyutping/export-records/index",
+        "pages/tools/comment-tools/index",
+        "pages/tools/vocab-notebook/index",
+        "pages/tools/vocab-notebook/list/index",
+        "pages/tools/vocab-notebook/add/index",
+        "pages/tools/vocab-notebook/edit/index",
+        "pages/tools/vocab-notebook/category-manage/index",
+        "pages/admin/index",
+        "pages/admin/checkin/list/index",
+        "pages/admin/checkin/manage/index",
+        "pages/admin/user/profile/index",
+        "pages/learning/base/jyutping/index",
+        "pages/learning/base/beginner/list/index",
+        "pages/learning/base/beginner/detail/index",
+        "pages/learning/crat/index",
+        "pages/learning/crat/article/index",
+        "pages/learning/crat/article-test/index",
+        "pages/learning/lessons/zi/index/index",
+        "pages/learning/lessons/zi/detail/index",
+        "pages/learning/lessons/zi/slide/index",
+        "pages/learning/lessons/top/zi/detail/index",
+        "pages/learning/lessons/top/zi/index/index",
+        "pages/learning/books/hambaanglaang/detail/index",
+        "pages/learning/books/hambaanglaang/index/index",
+        "pages/learning/crat/char-bucket/index",
+        "pages/learning/crat/char/index",
+        "pages/learning/crat/test/index",
+        "pages/learning/crat/word-bucket/index",
+        "pages/learning/crat/word/index",
+        "pages/pay/vip/index",
+        "pages/pay/agreement/index",
+        "pages/pay/redeem/index",
+        "pages/pay/redeem-claim/index",
+        "pages/correction/sessions/index",
+        "pages/correction/session/detail",
+        "pages/correction/teacher/students/index",
+        "pages/correction/teacher/students/bind/index",
+        "pages/correction/teacher/students/detail/index",
+        "pages/correction/teacher/students/checkins/index",
+        "pages/correction/teacher/wallet/index",
+        "pages/correction/student/bind/index",
+        "pages/correction/student/errors/index",
+        "pages/correction/student/errors/list/index",
+        "pages/correction/student/errors/detail/index",
+        "pages/correction/student/errors/tags/index",
+        "pages/correction/student/errors/tags/detail/index",
+        "donutAuthorize__/pages/miniProgramLoginAuthorize/miniProgramLoginAuthorize"
+    ],
+    "page": {
+        "pages/index/index.html": {
+            "window": {}
+        },
+        "pages/order/list/index.html": {
+            "window": {}
+        },
+        "pages/vocabulary/detail/index.html": {
+            "window": {}
+        },
+        "pages/webview/index.html": {
+            "window": {}
+        },
+        "pages/app/login/index.html": {
+            "window": {}
+        },
+        "pages/app/native-login/index.html": {
+            "window": {
+                "navigationStyle": "custom"
+            }
+        },
+        "pages/voice/index/index.html": {
+            "window": {
+                "navigationBarTitleText": "列表页面",
+                "enablePullDownRefresh": true,
+                "backgroundTextStyle": "dark"
+            }
+        },
+        "pages/voice/detail/index.html": {
+            "window": {}
+        },
+        "pages/app/iap/index.html": {
+            "window": {}
+        },
+        "pages/app/pay/index.html": {
+            "window": {}
+        },
+        "pages/video/list/index.html": {
+            "window": {
+                "navigationBarTitleText": "视频合集",
+                "enablePullDownRefresh": true,
+                "backgroundTextStyle": "dark"
+            }
+        },
+        "pages/video/detail/index.html": {
+            "window": {}
+        },
+        "pages/audio/index/index.html": {
+            "window": {}
+        },
+        "pages/audio/list/index.html": {
+            "window": {
+                "navigationBarTitleText": "音频内容",
+                "enablePullDownRefresh": true,
+                "backgroundTextStyle": "dark"
+            }
+        },
+        "pages/audio/detail/index.html": {
+            "window": {}
+        },
+        "pages/poetry/detail/index.html": {
+            "window": {}
+        },
+        "pages/checkin/index/index.html": {
+            "window": {}
+        },
+        "pages/checkin/my/index.html": {
+            "window": {}
+        },
+        "pages/checkin/history/index.html": {
+            "window": {}
+        },
+        "pages/checkin/comment/index.html": {
+            "window": {}
+        },
+        "pages/checkin/help/index.html": {
+            "window": {}
+        },
+        "pages/my/index/index.html": {
+            "window": {}
+        },
+        "pages/my/favorites/index.html": {
+            "window": {}
+        },
+        "pages/my/history/index.html": {
+            "window": {}
+        },
+        "pages/my/user/setting.html": {
+            "window": {}
+        },
+        "pages/my/msg/index.html": {
+            "window": {}
+        },
+        "pages/my/notification/index.html": {
+            "window": {}
+        },
+        "pages/my/notification/detail/index.html": {
+            "window": {}
+        },
+        "pages/my/pinyin/index.html": {
+            "window": {}
+        },
+        "pages/my/pinyin-style/index.html": {
+            "window": {}
+        },
+        "pages/my/sound/index.html": {
+            "window": {}
+        },
+        "pages/my/audio-setting/index.html": {
+            "window": {}
+        },
+        "pages/my/account/index.html": {
+            "window": {}
+        },
+        "pages/songs/search/index.html": {
+            "window": {}
+        },
+        "pages/songs/list/index.html": {
+            "window": {}
+        },
+        "pages/songs/detail/index.html": {
+            "window": {}
+        },
+        "pages/sph/index.html": {
+            "window": {}
+        },
+        "pages/feedback/index/index.html": {
+            "window": {}
+        },
+        "pages/feedback/list/index.html": {
+            "window": {}
+        },
+        "pages/feedback/detail/index.html": {
+            "window": {}
+        },
+        "pages/tools/jyutping/index.html": {
+            "window": {}
+        },
+        "pages/tools/translate/index.html": {
+            "window": {}
+        },
+        "pages/tools/translate/favorites/list.html": {
+            "window": {}
+        },
+        "pages/tools/text-to-speech/index.html": {
+            "window": {}
+        },
+        "pages/tools/text-to-jyutping/index/index.html": {
+            "window": {}
+        },
+        "pages/tools/text-to-jyutping/preview/index.html": {
+            "window": {}
+        },
+        "pages/tools/text-to-jyutping/list/index.html": {
+            "window": {}
+        },
+        "pages/tools/text-to-jyutping/detail/index.html": {
+            "window": {}
+        },
+        "pages/tools/text-to-jyutping/export-records/index.html": {
+            "window": {}
+        },
+        "pages/tools/comment-tools/index.html": {
+            "window": {}
+        },
+        "pages/tools/vocab-notebook/index.html": {
+            "window": {}
+        },
+        "pages/tools/vocab-notebook/list/index.html": {
+            "window": {}
+        },
+        "pages/tools/vocab-notebook/add/index.html": {
+            "window": {}
+        },
+        "pages/tools/vocab-notebook/edit/index.html": {
+            "window": {}
+        },
+        "pages/tools/vocab-notebook/category-manage/index.html": {
+            "window": {}
+        },
+        "pages/admin/index.html": {
+            "window": {}
+        },
+        "pages/admin/checkin/list/index.html": {
+            "window": {}
+        },
+        "pages/admin/checkin/manage/index.html": {
+            "window": {}
+        },
+        "pages/admin/user/profile/index.html": {
+            "window": {}
+        },
+        "pages/learning/base/jyutping/index.html": {
+            "window": {}
+        },
+        "pages/learning/base/beginner/list/index.html": {
+            "window": {}
+        },
+        "pages/learning/base/beginner/detail/index.html": {
+            "window": {}
+        },
+        "pages/learning/crat/index.html": {
+            "window": {}
+        },
+        "pages/learning/crat/article/index.html": {
+            "window": {}
+        },
+        "pages/learning/crat/article-test/index.html": {
+            "window": {
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/learning/lessons/zi/index/index.html": {
+            "window": {}
+        },
+        "pages/learning/lessons/zi/detail/index.html": {
+            "window": {}
+        },
+        "pages/learning/lessons/zi/slide/index.html": {
+            "window": {}
+        },
+        "pages/learning/lessons/top/zi/detail/index.html": {
+            "window": {}
+        },
+        "pages/learning/lessons/top/zi/index/index.html": {
+            "window": {}
+        },
+        "pages/learning/books/hambaanglaang/detail/index.html": {
+            "window": {}
+        },
+        "pages/learning/books/hambaanglaang/index/index.html": {
+            "window": {}
+        },
+        "pages/learning/crat/char-bucket/index.html": {
+            "window": {
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/learning/crat/char/index.html": {
+            "window": {
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/learning/crat/test/index.html": {
+            "window": {
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/learning/crat/word-bucket/index.html": {
+            "window": {
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/learning/crat/word/index.html": {
+            "window": {
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/pay/vip/index.html": {
+            "window": {}
+        },
+        "pages/pay/agreement/index.html": {
+            "window": {}
+        },
+        "pages/pay/redeem/index.html": {
+            "window": {}
+        },
+        "pages/pay/redeem-claim/index.html": {
+            "window": {}
+        },
+        "pages/correction/sessions/index.html": {
+            "window": {
+                "navigationBarTitleText": "纠音会话",
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/correction/session/detail.html": {
+            "window": {
+                "navigationBarTitleText": "纠音聊天",
+                "componentPlaceholder": {
+                    "simple-text": "view"
+                }
+            }
+        },
+        "pages/correction/teacher/students/index.html": {
+            "window": {
+                "navigationBarTitleText": "学员管理",
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/correction/teacher/students/bind/index.html": {
+            "window": {}
+        },
+        "pages/correction/teacher/students/detail/index.html": {
+            "window": {
+                "navigationBarTitleText": "学员详情",
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/correction/teacher/students/checkins/index.html": {
+            "window": {
+                "navigationBarTitleText": "学员打卡",
+                "enablePullDownRefresh": true
+            }
+        },
+        "pages/correction/teacher/wallet/index.html": {
+            "window": {
+                "navigationBarTitleText": "教师钱包"
+            }
+        },
+        "pages/correction/student/bind/index.html": {
+            "window": {
+                "navigationBarTitleText": "绑定老师"
+            }
+        },
+        "pages/correction/student/errors/index.html": {
+            "window": {
+                "navigationBarTitleText": "错音本",
+                "enablePullDownRefresh": false
+            }
+        },
+        "pages/correction/student/errors/list/index.html": {
+            "window": {
+                "navigationBarTitleText": "错音列表",
+                "enablePullDownRefresh": false
+            }
+        },
+        "pages/correction/student/errors/detail/index.html": {
+            "window": {
+                "navigationBarTitleText": "错音详情",
+                "enablePullDownRefresh": false
+            }
+        },
+        "pages/correction/student/errors/tags/index.html": {
+            "window": {
+                "navigationBarTitleText": "标签分类",
+                "enablePullDownRefresh": false
+            }
+        },
+        "pages/correction/student/errors/tags/detail/index.html": {
+            "window": {
+                "navigationBarTitleText": "标签详情",
+                "enablePullDownRefresh": false
+            }
+        },
+        "donutAuthorize__/pages/miniProgramLoginAuthorize/miniProgramLoginAuthorize.html": {
+            "window": {
+                "navigationStyle": "default",
+                "navigationBarBackgroundColor": "#ffffff",
+                "navigationBarTextStyle": "black",
+                "backgroundColor": "#ffffff",
+                "backgroundTextStyle": "light",
+                "backgroundColorTop": "ffffff",
+                "backgroundColorBottom": "ffffff",
+                "renderer": "webview"
+            }
+        }
+    },
+    "global": {
+        "window": {
+            "backgroundColor": "#F6F6F6",
+            "backgroundTextStyle": "light",
+            "navigationBarBackgroundColor": "#F6F6F6",
+            "navigationBarTitleText": "粤语派",
+            "navigationBarTextStyle": "black",
+            "navigationStyle": "custom"
+        }
+    },
+    "miniApp": {
+        "useAuthorizePage": true
+    },
+    "requiredBackgroundModes": [
+        "audio"
+    ],
+    "renderer": {
+        "allUsed": [
+            "webview"
+        ],
+        "default": "webview"
+    },
+    "componentFramework": {
+        "allUsed": [
+            "exparser"
+        ],
+        "default": "exparser"
+    }
+}

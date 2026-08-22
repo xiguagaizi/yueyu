@@ -1,0 +1,17 @@
+<van-sticky zIndex="10000">
+	<van-nav-bar border="false" customClass="custom-nav" leftText="" bind:click-left="navBack">
+		<view class="app-name" slot="left">
+			粤语派
+		</view>
+	</van-nav-bar>
+</van-sticky>
+<view class="container" hidden="true">
+	<user-profile checkinDays="" loginType="" msg="" needlogin="false" nickname="" profileBanner="" avatar="" bind:tap="onTapUserProfile" days="" style="margin-bottom:-30rpx;">	</user-profile>
+	<notice-bar appId="" closeable="" navigateType="" path="" rememberRead="" title="" uuid="">	</notice-bar>
+	<checkin-bar bind:nav="updateRecentlyUsed" date="" nav="" sound="">	</checkin-bar>
+	<card-list bind:nav="updateRecentlyUsed" list="" size="normal">	</card-list>
+	<translate-form bind:nav="updateRecentlyUsed" dictNav="" translateNav="">	</translate-form>
+	<card-list bind:nav="updateRecentlyUsed" list="" size="small">	</card-list>
+	<card-list headColor="#ffffff" headerBackground="url(https://s.cantonesepi.top/pi/images/mp/home/tab-bg-1.png) top / 100%  auto no-repeat,linear-gradient( 90deg, #5FAAFB 0%, #D8F0FF 100%)" list="" size="large" bind:nav="updateRecentlyUsed" groupName="免费课程">	</card-list>
+	<card-list headColor="#ffffff" headerBackground="url(https://s.cantonesepi.top/pi/images/mp/home/tab-bg-2.png) top / 100%  auto no-repeat,linear-gradient( 90deg, #526CE3 0%, #C5D2FF 100%)" list="" size="large" bind:nav="updateRecentlyUsed" groupName="进阶跟读">	</card-list>
+</view>

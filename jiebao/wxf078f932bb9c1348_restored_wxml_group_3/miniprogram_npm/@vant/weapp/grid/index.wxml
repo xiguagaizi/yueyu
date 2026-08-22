@@ -1,0 +1,3 @@
+<view class="van-grid custom-class " style="">
+	<slot>	</slot>
+</view>

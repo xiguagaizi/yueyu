@@ -1,0 +1,25 @@
+<view class="custom-class van-card">
+	<view class="van-card__header">
+		<view bind:tap="onClickThumb" class="van-card__thumb">
+			<slot name="thumb">			</slot>
+			<slot name="tag">			</slot>
+		</view>
+		<view class="van-card__content van-card__content">
+			<view>
+				<slot name="title">				</slot>
+				<slot name="desc">				</slot>
+				<slot name="tags">				</slot>
+			</view>
+			<view class="van-card__bottom">
+				<slot name="price-top">				</slot>
+				<slot name="price">				</slot>
+				<slot name="origin-price">				</slot>
+				<slot name="num">				</slot>
+				<slot name="bottom">				</slot>
+			</view>
+		</view>
+	</view>
+	<view class="van-card__footer">
+		<slot name="footer">		</slot>
+	</view>
+</view>

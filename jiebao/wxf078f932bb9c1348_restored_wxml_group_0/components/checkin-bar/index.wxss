@@ -1,0 +1,63 @@
+.daka-bar {
+    background: #fff;
+    border: 1rpx solid #fff;
+    border-radius: 35rpx;
+    box-sizing: border-box;
+    height: 70rpx;
+    justify-content: space-between;
+    margin-top: -10rpx;
+    width: 100%;
+}
+
+.daka-bar,.daka-bar-content {
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.daka-bar-content {
+    flex: 1;
+    height: 100%;
+}
+
+.daka-bar-content view {
+    color: #626262;
+    font-family: SourceHanSerifCN;
+    font-size: 24rpx;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24rpx;
+    margin-left: 10rpx;
+    text-align: right;
+}
+
+.daka-bar-content view text {
+    color: #2380f9;
+    font-size: 24rpx;
+    font-weight: 500;
+}
+
+.daka-bar-content-play {
+    height: 40rpx;
+    margin-left: 15rpx;
+    width: 40rpx;
+}
+
+.daka-bar-nav {
+    align-items: center;
+    background: #2380f9;
+    border-radius: 28rpx;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    font-family: SourceHanSerifCN;
+    font-size: 24rpx;
+    font-style: normal;
+    font-weight: 800;
+    height: 56rpx;
+    justify-content: center;
+    line-height: 24rpx;
+    margin-right: 7rpx;
+    width: 118rpx;
+}
+

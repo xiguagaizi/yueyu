@@ -1,0 +1,10 @@
+.list {
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: column;
+}
+
+.list view {
+    padding: 10rpx;
+}
+

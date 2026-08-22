@@ -1,0 +1,4 @@
+<van-sticky>
+	<van-nav-bar border="false" customClass="custom-nav" leftText="返回" title="重点字词" leftArrow="true" bind:click-left="navBack">	</van-nav-bar>
+</van-sticky>
+<view class="container"></view>

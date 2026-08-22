@@ -1,0 +1,3 @@
+<view class="van-config-provider" style="">
+	<slot>	</slot>
+</view>

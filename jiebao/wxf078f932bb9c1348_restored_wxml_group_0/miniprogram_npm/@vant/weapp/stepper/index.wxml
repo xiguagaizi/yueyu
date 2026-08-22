@@ -1,0 +1,3 @@
+<view class="van-stepper custom-class">
+	<input bind:blur="onBlur" bindinput="onInput" style="" alwaysEmbed="" bind:focus="onFocus" class="input-class van-stepper__input" disabled="" focus="" type="digit" value="">	</input>
+</view>

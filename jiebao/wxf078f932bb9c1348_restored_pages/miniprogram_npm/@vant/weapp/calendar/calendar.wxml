@@ -1,0 +1,10 @@
+<view class="van-calendar">
+	<header title="" bind:click-subtitle="onClickSubtitle" firstDayOfWeek="" showSubtitle="" showTitle="" subtitle="">
+		<slot name="title" slot="title">		</slot>
+	</header>
+	<scroll-view scrollIntoView="" scrollY="true" class="van-calendar__body">	</scroll-view>
+	<view class="">
+		<slot name="footer">		</slot>
+	</view>
+	<view class="">	</view>
+</view>

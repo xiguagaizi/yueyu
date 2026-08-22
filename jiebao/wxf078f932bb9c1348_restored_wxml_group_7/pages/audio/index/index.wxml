@@ -1,0 +1,14 @@
+<van-sticky>
+	<van-nav-bar title="有声内容" leftArrow="true" bind:click-left="navBack" border="false" customClass="custom-nav" leftText="返回">	</van-nav-bar>
+</van-sticky>
+<view class="container">
+	<view class="hero">
+		<view class="hero__title">
+			古诗词、粤文读本、粤语鸡汤
+		</view>
+		<view class="hero__desc">
+			统一收口到音频图文内容列表，后续都从这里进入。
+		</view>
+	</view>
+	<view class="portal-list">	</view>
+</view>

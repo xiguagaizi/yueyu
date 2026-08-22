@@ -1,0 +1,3 @@
+<view class="van-dropdown-menu van-dropdown-menu--top-bottom custom-class">
+	<slot>	</slot>
+</view>

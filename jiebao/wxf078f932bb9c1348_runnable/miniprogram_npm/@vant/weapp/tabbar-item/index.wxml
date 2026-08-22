@@ -1,0 +1,9 @@
+<view bindtap="onClick" class="van-tabbar-item custom-class" style="color:">
+	<view class="van-tabbar-item__icon">
+		<slot name="icon">		</slot>
+		<van-info customClass="van-tabbar-item__info" dot="" info="">		</van-info>
+	</view>
+	<view class="van-tabbar-item__text">
+		<slot>		</slot>
+	</view>
+</view>

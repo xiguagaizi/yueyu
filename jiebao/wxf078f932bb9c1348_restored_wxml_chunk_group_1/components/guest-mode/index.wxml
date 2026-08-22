@@ -1,0 +1,5 @@
+<view class="guest-mode">
+	<van-button size="normal" type="info" block="true" round="true" bind:tap="navToAppLogin">
+		当前为游客模式，登录后查看更多信息
+	</van-button>
+</view>

@@ -1,0 +1,6 @@
+<view bind:tap="onClick" class="van-sidebar-item   custom-class" hoverClass="van-sidebar-item--hover" hoverStayTime="70">
+	<view class="van-sidebar-item__text">
+		<van-info dot="" info="">		</van-info>
+		<slot name="title">		</slot>
+	</view>
+</view>

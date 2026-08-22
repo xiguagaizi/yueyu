@@ -1,0 +1,16 @@
+<view class="user-profile">
+	<view bind:tap="onTapProfile" class="profile">
+		<image class="avatar" src="">		</image>
+		<view class="info">
+			<view class="user-info">
+				<text class="nickname">
+				</text>
+				<view bind:tap="nvaToMy" class="nav">
+					个人中心
+				</view>
+			</view>
+			<view catchtap="navToSecondary" class="greeting">
+			</view>
+		</view>
+	</view>
+</view>

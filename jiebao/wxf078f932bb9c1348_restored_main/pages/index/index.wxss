@@ -1,0 +1,67 @@
+page {
+    background-color: #dff1fc;
+    background-image: url(https://s.cantonesepi.top/test/27@2x.png);
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.container {
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: column;
+    gap: 30rpx;
+    padding-bottom: 80rpx;
+    padding-left: 24rpx;
+    padding-right: 24rpx;
+}
+
+.app-name {
+    color: #2d2e2f;
+    font-family: SourceHanSerifCN-Heavy;
+    font-size: 36rpx;
+    font-weight: 900;
+    line-height: 36rpx;
+    overflow-wrap: break-word;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.popup-notice {
+    padding: 44rpx 40rpx 48rpx;
+    position: relative;
+}
+
+.popup-close {
+    align-items: center;
+    background: #f4f6fa;
+    border-radius: 999rpx;
+    display: -webkit-flex;
+    display: flex;
+    height: 56rpx;
+    justify-content: center;
+    position: absolute;
+    right: 28rpx;
+    top: 28rpx;
+    width: 56rpx;
+}
+
+.notice-title {
+    color: red;
+    font-size: 38rpx;
+    font-weight: 700;
+    line-height: 1.35;
+    padding: 6rpx 72rpx 22rpx;
+    text-align: center;
+}
+
+.notice-detail {
+    font-size: 32rpx;
+    line-height: 1.65;
+    max-height: 62vh;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+

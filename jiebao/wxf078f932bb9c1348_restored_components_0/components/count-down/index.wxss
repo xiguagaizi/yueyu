@@ -1,0 +1,16 @@
+.countdown {
+    align-items: center;
+    background: #ff6b6b;
+    border-radius: 40rpx;
+    display: -webkit-flex;
+    display: flex;
+    gap: 8rpx;
+    margin-top: 20rpx;
+    padding: 8rpx 24rpx;
+}
+
+.countdown-text {
+    color: #fff;
+    font-size: 24rpx;
+}
+

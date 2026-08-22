@@ -1,0 +1,3 @@
+<view class="custom-class van-divider" style="">
+	<slot>	</slot>
+</view>

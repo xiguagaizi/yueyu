@@ -1,0 +1,3 @@
+<van-button bind:click="onClick" bindagreeprivacyauthorization="onAgreePrivacyAuthorization" bindgetuserinfo="onGetUserInfo" bindlaunchapp="onLaunchApp" class="van-goods-action-button" loading="" color="" sendMessagePath="" sessionFrom="" showMessageCard="" id="" sendMessageImg="" sendMessageTitle="" type="" appParameter="" binderror="onError" businessId="" openType="" bindopensetting="onOpenSetting" disabled="" lang="" bindgetphonenumber="onGetPhoneNumber" buttonId="" customClass="van-goods-action-button__inner custom-class" plain="" size="" bindcontact="onContact">
+	<slot>	</slot>
+</van-button>

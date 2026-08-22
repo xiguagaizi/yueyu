@@ -1,0 +1,8 @@
+{
+    "component": true,
+    "usingComponents": {
+        "van-popup": "../../miniprogram_npm/@vant/weapp/popup/index",
+        "van-stepper": "../../miniprogram_npm/@vant/weapp/stepper/index",
+        "van-switch": "../../miniprogram_npm/@vant/weapp/switch/index"
+    }
+}

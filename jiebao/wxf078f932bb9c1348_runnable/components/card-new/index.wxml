@@ -1,0 +1,1 @@
+<view bind:tap="nav" class="container " style="background:;border-radius:;"></view>

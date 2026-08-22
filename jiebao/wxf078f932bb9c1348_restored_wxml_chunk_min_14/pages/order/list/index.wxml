@@ -1,0 +1,1 @@
+<van-nav-bar customClass="custom-nav" leftText="返回" title="我的订单" leftArrow="true" bind:click-left="navBack" border="false"></van-nav-bar>

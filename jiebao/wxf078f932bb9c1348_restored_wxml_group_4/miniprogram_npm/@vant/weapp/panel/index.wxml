@@ -1,0 +1,9 @@
+<view class="van-panel van-hairline--top-bottom custom-class">
+	<slot name="header">	</slot>
+	<view class="van-panel__content">
+		<slot>		</slot>
+	</view>
+	<view class="van-panel__footer van-hairline--top footer-class">
+		<slot name="footer">		</slot>
+	</view>
+</view>

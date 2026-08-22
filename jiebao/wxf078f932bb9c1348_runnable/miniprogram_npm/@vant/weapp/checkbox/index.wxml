@@ -1,0 +1,5 @@
+<view class="van-checkbox custom-class">
+	<view bindtap="toggle" class="van-checkbox__icon-wrap">
+		<van-icon name="success" size="0.8em" style="" class="van-checkbox__icon" customClass="icon-class" customStyle="line-height: 1.25em;">		</van-icon>
+	</view>
+</view>

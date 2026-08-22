@@ -1,0 +1,13 @@
+<van-popup round="true" bind:click-overlay="onClickOverlay" class="van-share-sheet" closeOnClickOverlay="" overlay="" show="" bind:close="onClose" duration="" overlayStyle="" position="bottom" safeAreaInsetBottom="" zIndex="">
+	<view class="van-share-sheet__header">
+		<view class="van-share-sheet__title">
+			<slot name="title">			</slot>
+		</view>
+		<view class="van-share-sheet__description">
+			<slot name="description">			</slot>
+		</view>
+	</view>
+	<options bind:select="onSelect" options="">	</options>
+	<button class="van-share-sheet__cancel" type="button" bindtap="onCancel">
+	</button>
+</van-popup>

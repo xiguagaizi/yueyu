@@ -1,0 +1,23 @@
+.container {
+    margin-top: 20rpx;
+    padding-top: 10rpx;
+}
+
+.vip-guide {
+    display: -webkit-flex;
+    display: flex;
+    height: 70rpx;
+    padding: 0rpx;
+}
+
+.vip-guide .text {
+    background: linear-gradient(90deg,#ffe1a0,#ffe39b);
+    border-top-right-radius: 30rpx;
+    color: #9d5c05;
+    font-size: 28rpx;
+    font-weight: 700;
+    line-height: 70rpx;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+}
+

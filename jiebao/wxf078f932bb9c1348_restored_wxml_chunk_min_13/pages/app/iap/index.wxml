@@ -1,0 +1,3 @@
+<van-sticky>
+	<van-nav-bar leftArrow="true" border="false" customClass="custom-nav" customStyle="background:#f8f9fa;" leftText="返回" rightText="恢复购买" title="" bind:click-left="navBack" bind:click-right="restore">	</van-nav-bar>
+</van-sticky>

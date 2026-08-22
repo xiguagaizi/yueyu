@@ -1,0 +1,86 @@
+<view class="home">
+  <view class="topbar">
+    <view>
+      <view class="brand">粤语派</view>
+      <view class="slogan">每日学一点，开口讲粤语</view>
+    </view>
+    <view class="profile-button" data-url="/pages/my/index/index" bindtap="go">粤</view>
+  </view>
+
+  <view class="hero">
+    <view class="hero-copy">
+      <view class="hello">你好，{{nickname}}</view>
+      <view class="hero-title">今日继续开声练习</view>
+      <view class="hero-desc">坚持 10 分钟，粤语自然讲得顺</view>
+      <button class="hero-action" data-url="/pages/learning/base/beginner/list/index" bindtap="go">开始今日学习</button>
+    </view>
+    <view class="hero-art">
+      <view class="bubble bubble-one">早晨</view>
+      <view class="bubble bubble-two">zou2 san4</view>
+      <view class="mascot">粤</view>
+    </view>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat"><text class="stat-number">{{checkinDays}}</text><text class="stat-label">连续打卡</text></view>
+    <view class="divider"></view>
+    <view class="stat"><text class="stat-number">{{learnedWords}}</text><text class="stat-label">掌握词汇</text></view>
+    <view class="divider"></view>
+    <view class="stat"><text class="stat-number">{{studyMinutes}}</text><text class="stat-label">学习分钟</text></view>
+  </view>
+
+  <view class="section-head">
+    <text class="section-title">常用工具</text>
+    <text class="section-more" data-url="/pages/tools/vocab-notebook/index" bindtap="go">我的生词本 ›</text>
+  </view>
+  <view class="tool-grid">
+    <view class="tool tool-purple" data-url="/pages/tools/jyutping/index" bindtap="go">
+      <view class="tool-icon">拼</view><view class="tool-title">查粤拼</view><view class="tool-desc">汉字读音查询</view>
+    </view>
+    <view class="tool tool-orange" data-url="/pages/tools/translate/index" bindtap="go">
+      <view class="tool-icon">译</view><view class="tool-title">粤语翻译</view><view class="tool-desc">常用表达互译</view>
+    </view>
+    <view class="tool tool-green" data-url="/pages/tools/text-to-jyutping/index/index" bindtap="go">
+      <view class="tool-icon">注</view><view class="tool-title">长文注音</view><view class="tool-desc">批量生成粤拼</view>
+    </view>
+    <view class="tool tool-blue" data-url="/pages/songs/search/index" bindtap="go">
+      <view class="tool-icon">歌</view><view class="tool-title">粤拼歌词</view><view class="tool-desc">跟唱经典粤语歌</view>
+    </view>
+  </view>
+
+  <view class="checkin-card">
+    <view class="checkin-icon">🎙</view>
+    <view class="checkin-copy">
+      <view class="checkin-title">每日开口打卡</view>
+      <view class="checkin-desc">今天读一句：“我哋一齐学粤语”</view>
+    </view>
+    <button class="checkin-button" bindtap="checkin">打卡</button>
+  </view>
+
+  <view class="section-head">
+    <text class="section-title">精选课程</text>
+    <text class="section-more" data-url="/pages/learning/base/beginner/list/index" bindtap="go">全部课程 ›</text>
+  </view>
+  <view class="course-row">
+    <view class="course course-yellow" data-url="/pages/learning/base/beginner/list/index" bindtap="go">
+      <view class="course-tag">零基础</view><view class="course-title">粤语入门必学</view><view class="course-desc">称呼、问候、生活常用语</view><view class="course-progress"><view class="progress progress-42"></view></view>
+    </view>
+    <view class="course course-sky" data-url="/pages/learning/base/jyutping/index" bindtap="go">
+      <view class="course-tag">发音课</view><view class="course-title">粤拼九声六调</view><view class="course-desc">系统掌握标准粤语发音</view><view class="course-progress"><view class="progress progress-68"></view></view>
+    </view>
+  </view>
+
+  <view class="section-head">
+    <text class="section-title">最近学习</text>
+    <text class="section-more" data-url="/pages/my/history/index" bindtap="go">学习记录 ›</text>
+  </view>
+  <view class="recent-card">
+    <view wx:for="{{recent}}" wx:key="title" class="recent-item" data-url="{{item.path}}" bindtap="go">
+      <view class="recent-tag">{{item.tag}}</view>
+      <view class="recent-copy"><view class="recent-title">{{item.title}}</view><view class="recent-desc">{{item.desc}}</view></view>
+      <view class="arrow">›</view>
+    </view>
+  </view>
+
+  <view class="bottom-space">本地恢复版 · 所有演示数据仅保存在本机</view>
+</view>

@@ -1,0 +1,12 @@
+<van-sticky>
+	<van-nav-bar bind:click-left="navBack" border="false" customClass="custom-nav" customStyle="background:#f8f9fa;" leftText="返回" title="" back="true" leftArrow="true">	</van-nav-bar>
+</van-sticky>
+<view class="container">
+	<view class="article-empty">
+		<text>
+			暂无字幕
+		</text>
+	</view>
+</view>
+<audio-player-bar audioSrc="" bind:progressdragstart="handleProgressDragStart" loadError="" currentTimeLabel="" episodeLoading="" isFavorite="" isPlaying="" paragraphPlaybackLabel="" progressValue="" bind:progressdrag="handleProgressDrag" bind:stoploop="handleStopLoop" durationLabel="" bind:progressdragend="handleProgressDragEnd" bind:setting="toggleSettingPanel" title="音频素材" bind:favorite="handleToggleFavorite" bind:playtoggle="handlePlayToggle" bind:progresschange="handleProgressChange"></audio-player-bar>
+<subtitle-settings-sheet bind:settingchange="onSettingChange" show="" singleLoopCount="" bind:close="toggleSettingPanel" bind:loopintervalchange="onLoopIntervalChange" showSentenceTranslation="" showWordTranslation="" enableWordTranslationOption="" loopIntervalSeconds="" autoScroll="" bind:loopcountchange="onLoopCountChange" showPinyin="" enablePinyinOption="" enableSentenceTranslationOption=""></subtitle-settings-sheet>

@@ -1,0 +1,11 @@
+{
+    "usingComponents": {
+        "annotated-text": "../../../components/annotated-text-voice/index",
+        "van-action-sheet": "../../../miniprogram_npm/@vant/weapp/action-sheet/index",
+        "van-icon": "../../../miniprogram_npm/@vant/weapp/icon/index",
+        "van-nav-bar": "../../../miniprogram_npm/@vant/weapp/nav-bar/index",
+        "van-popup": "../../../miniprogram_npm/@vant/weapp/popup/index",
+        "van-sticky": "../../../miniprogram_npm/@vant/weapp/sticky/index",
+        "van-switch": "../../../miniprogram_npm/@vant/weapp/switch/index"
+    }
+}

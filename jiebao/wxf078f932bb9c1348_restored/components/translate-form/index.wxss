@@ -1,0 +1,117 @@
+.trans-form {
+    align-items: center;
+    background: linear-gradient(180deg,#c8dcfc,#e1f4ff);
+    border: 1rpx solid #fff;
+    border-radius: 22rpx;
+    box-sizing: border-box;
+    display: -webkit-flex;
+    display: flex;
+    flex-direction: column;
+    height: 260rpx;
+    position: relative;
+    width: 100%;
+}
+
+.trans-form-bg {
+    height: 100%;
+    left: 0rpx;
+    position: absolute;
+    top: 0rpx;
+    width: 100%;
+}
+
+.trans-form-bg-transform {
+    transform: scaleX(-1);
+}
+
+.head {
+    color: #626262;
+    font-family: SourceHanSerifCN;
+    font-size: 30rpx;
+    font-style: normal;
+    font-weight: 500;
+    height: 80rpx;
+    justify-content: space-around;
+    line-height: 36rpx;
+    text-align: right;
+    top: 0rpx;
+    width: 100%;
+}
+
+.from,.head {
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    position: absolute;
+}
+
+.from {
+    background: rgba(95,170,251,.09);
+    border: 1rpx solid #5faafb;
+    border-radius: 20rpx;
+    height: 100rpx;
+    top: 120rpx;
+    width: 95%;
+}
+
+.from,.input {
+    box-sizing: border-box;
+}
+
+.input {
+    flex: 1;
+    height: 100%;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+}
+
+.btn {
+    align-items: center;
+    background: linear-gradient(108deg,#ff9627,#ffc849);
+    border-radius: 32rpx;
+    color: #fff;
+    display: -webkit-flex;
+    display: flex;
+    font-family: SourceHanSerifCN;
+    font-size: 26rpx;
+    height: 64rpx;
+    line-height: 26rpx;
+    margin-right: 20rpx;
+    padding-left: 34rpx;
+    padding-right: 34rpx;
+}
+
+.active,.btn {
+    font-style: normal;
+    font-weight: 800;
+    text-align: right;
+}
+
+.active {
+    color: #1d1e1e;
+    font-size: 36rpx;
+    line-height: 36rpx;
+}
+
+.tab-wrap {
+    align-items: center;
+    display: -webkit-flex;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+
+.tab {
+    position: relative;
+}
+
+.underline {
+    background: linear-gradient(90deg,#3480f1,#fff);
+    bottom: -7rpx;
+    height: 15rpx;
+    position: absolute;
+    width: 88rpx;
+    z-index: -1;
+}
+

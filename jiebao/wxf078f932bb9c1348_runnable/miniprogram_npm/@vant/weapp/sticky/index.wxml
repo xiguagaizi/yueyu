@@ -1,0 +1,5 @@
+<view class="custom-class van-sticky" style="">
+	<view class="van-sticky-wrap" style="">
+		<slot>		</slot>
+	</view>
+</view>

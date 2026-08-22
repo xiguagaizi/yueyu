@@ -1,0 +1,17 @@
+<van-cell arrowDirection="" center="" clickable="" customClass="custom-class van-field" customStyle="" icon="" required="" size="" titleStyle="margin-right: 12px;" border="" isLink="" titleWidth="">
+	<slot name="left-icon" slot="icon">	</slot>
+	<slot name="label" slot="title">	</slot>
+	<view class="van-field__body">
+		<view bindtap="onClickInput" class="van-field__control van-field__control--custom">
+			<slot name="input">			</slot>
+		</view>
+		<input disabled="" password="false" autoFocus="" bindblur="onBlur" class="van-field__control input-class" focus="" placeholder="" adjustPosition="" maxlength="" value="" holdKeyboard="" selectionStart="" alwaysEmbed="" bindconfirm="onConfirm" bindtap="onClickInput" bindinput="onInput" placeholderClass="van-field__placeholder" cursorSpacing="" id="" type="" bindkeyboardheightchange="onKeyboardHeightChange" confirmHold="" confirmType="" cursor="" selectionEnd="" bindfocus="onFocus" placeholderStyle="">		</input>
+		<view bind:tap="onClickIcon" class="van-field__icon-container">
+			<slot name="right-icon">			</slot>
+			<slot name="icon">			</slot>
+		</view>
+		<view class="van-field__button">
+			<slot name="button">			</slot>
+		</view>
+	</view>
+</van-cell>

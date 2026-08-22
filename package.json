@@ -1,0 +1,20 @@
+{
+  "name": "yueyu-pronunciation-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "粤语发音纠错 demo：跟读小打卡课文，调用 cantonese.ai 评分接口做逐音节纠音",
+  "scripts": {
+    "start": "node --use-env-proxy server.mjs",
+    "dev": "node --use-env-proxy --watch server.mjs",
+    "build:lessons": "node scripts/build-lessons.mjs",
+    "score": "node --use-env-proxy scripts/score-file.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "multer": "^2.0.2"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

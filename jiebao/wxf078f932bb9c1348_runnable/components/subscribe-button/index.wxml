@@ -1,0 +1,7 @@
+<van-button
+  icon="{{icon}}"
+  color="{{color}}"
+  round="{{round}}"
+  size="{{size}}"
+  bind:click="subscribe"
+>{{text}}</van-button>

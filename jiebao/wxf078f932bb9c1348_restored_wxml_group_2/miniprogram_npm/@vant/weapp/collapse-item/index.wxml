@@ -1,0 +1,13 @@
+<view class="van-collapse-item custom-class van-hairline--top">
+	<van-cell isLink="" rightIconClass="van-cell__right-icon" size="" title="" titleClass="title-class" clickable="" class="van-collapse-item__title" icon="" label="" border="" customClass="van-cell" value="" bind:click="onClick" hoverClass="van-cell--hover">
+		<slot name="title" slot="title">		</slot>
+		<slot name="icon" slot="icon">		</slot>
+		<slot name="value">		</slot>
+		<slot name="right-icon" slot="right-icon">		</slot>
+	</van-cell>
+	<view animation="" class="van-collapse-item__wrapper" style="height:0;">
+		<view class="van-collapse-item__content content-class">
+			<slot>			</slot>
+		</view>
+	</view>
+</view>
