@@ -1,3 +1,0 @@
-<view class="van-skeleton__content">
-	<slot>	</slot>
-</view>

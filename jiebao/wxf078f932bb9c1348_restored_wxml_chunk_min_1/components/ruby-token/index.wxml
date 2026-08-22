@@ -1,8 +1,0 @@
-<view class="ruby-token ruby-token-- ruby-token--display- ">
-	<view catchtap="onPinyinTap" class="ruby-token__pinyin-wrap ">
-		<view class="ruby-token__pinyin" style="">
-			<text class="ruby-token__raw" style="">
-			</text>
-		</view>
-	</view>
-</view>

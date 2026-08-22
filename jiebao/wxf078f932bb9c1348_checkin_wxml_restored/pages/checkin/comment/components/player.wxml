@@ -1,6 +1,0 @@
-<view bind:tap="playAudio" class="audio" style="background-color:;">
-	<van-icon name="play-circle-o" size="55rpx">	</van-icon>
-	<text>
-		NaN秒
-	</text>
-</view>

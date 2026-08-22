@@ -1,1 +1,0 @@
-<view class="van-rate custom-class" bind:touchmove="onTouchMove"></view>

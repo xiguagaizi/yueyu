@@ -1,5 +1,0 @@
-<view style="background:;" bind:tap="nav" class="container">
-	<view class="title" style="color:;">
-	</view>
-	<image class="logo" src="../../images/logo.png">	</image>
-</view>

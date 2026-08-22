@@ -1,3 +1,0 @@
-<view class="van-checkbox-group">
-	<slot>	</slot>
-</view>

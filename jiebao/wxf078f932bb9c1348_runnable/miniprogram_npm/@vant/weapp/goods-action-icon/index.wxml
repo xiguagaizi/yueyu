@@ -1,7 +1,0 @@
-<van-button sessionFrom="" showMessageCard="" binderror="onError" businessId="" disabled="" sendMessagePath="" sendMessageTitle="" bindopensetting="onOpenSetting" loading="" square="true" appParameter="" bind:click="onClick" bindgetphonenumber="onGetPhoneNumber" bindgetuserinfo="onGetUserInfo" bindcontact="onContact" id="" openType="" size="large" bindlaunchapp="onLaunchApp" customClass="van-goods-action-icon" lang="" sendMessageImg="">
-	<view>
-		<slot name="icon">		</slot>
-	</view>
-	<text class="text-class">
-	</text>
-</van-button>

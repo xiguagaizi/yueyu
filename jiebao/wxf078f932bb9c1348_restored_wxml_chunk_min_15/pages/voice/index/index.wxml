@@ -1,3 +1,0 @@
-<van-sticky>
-	<van-nav-bar bind:click-left="navBack" border="false" customClass="custom-nav" leftText="返回" title="每日粤听" leftArrow="true">	</van-nav-bar>
-</van-sticky>

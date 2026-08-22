@@ -1,8 +1,0 @@
-{
-    "component": true,
-    "usingComponents": {
-        "van-button": "../../miniprogram_npm/@vant/weapp/button/index",
-        "van-field": "../../miniprogram_npm/@vant/weapp/field/index",
-        "van-icon": "../../miniprogram_npm/@vant/weapp/icon/index"
-    }
-}

@@ -1,7 +1,0 @@
-<view bind:tap="onClick" class="custom-class van-slider" style="">
-	<view class="van-slider__bar" style=";">
-		<view catch:touchmove="onTouchMove" class="van-slider__button-wrapper" bind:touchcancel="onTouchEnd" bind:touchend="onTouchEnd" bind:touchstart="onTouchStart">
-			<view class="van-slider__button">			</view>
-		</view>
-	</view>
-</view>

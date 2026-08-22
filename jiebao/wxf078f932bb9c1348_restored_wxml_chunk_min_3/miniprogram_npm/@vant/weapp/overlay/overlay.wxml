@@ -1,3 +1,0 @@
-<van-transition duration="" show="" bind:tap="onClick" catch:touchmove="" customClass="van-overlay custom-class" customStyle="z-index: ; ">
-	<slot>	</slot>
-</van-transition>

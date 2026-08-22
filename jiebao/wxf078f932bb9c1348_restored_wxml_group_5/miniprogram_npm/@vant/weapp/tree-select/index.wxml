@@ -1,8 +1,0 @@
-<view style="height:" class="van-tree-select">
-	<scroll-view scrollY="true" class="van-tree-select__nav">
-		<van-sidebar activeKey="" bind:change="onClickNav" customClass="van-tree-select__nav__inner">		</van-sidebar>
-	</scroll-view>
-	<scroll-view scrollY="true" class="van-tree-select__content">
-		<slot name="content">		</slot>
-	</scroll-view>
-</view>

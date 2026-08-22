@@ -1,6 +1,0 @@
-<view class="van-circle">
-	<canvas canvasId="van-circle" class="van-circle__canvas" id="van-circle" style="width:;height:" type="">	</canvas>
-	<view class="van-circle__text">
-		<slot>		</slot>
-	</view>
-</view>

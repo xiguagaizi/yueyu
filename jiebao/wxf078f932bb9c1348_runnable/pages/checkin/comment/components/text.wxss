@@ -1,5 +1,0 @@
-.pin {
-    border-bottom: 1px dashed gray;
-    font-weight: 700;
-}
-

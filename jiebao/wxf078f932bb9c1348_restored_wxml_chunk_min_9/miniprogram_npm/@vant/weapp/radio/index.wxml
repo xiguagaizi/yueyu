@@ -1,5 +1,0 @@
-<view class="van-radio custom-class">
-	<view bindtap="onChange" class="van-radio__icon-wrap" style="font-size:">
-		<van-icon customStyle="font-size:.8em;display:block" name="success" style="" class="van-radio__icon van-radio__icon--checked" customClass="icon-class">		</van-icon>
-	</view>
-</view>

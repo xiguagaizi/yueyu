@@ -1,3 +1,0 @@
-<view bind:tap="onClick" class="van-switch van-switch--on custom-class" style="">
-	<view class="van-switch__node node-class">	</view>
-</view>

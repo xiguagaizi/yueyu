@@ -1,6 +1,0 @@
-<view class="custom-class van-loading">
-	<view class="van-loading__spinner van-loading__spinner--" style="">	</view>
-	<view class="van-loading__text" style="">
-		<slot>		</slot>
-	</view>
-</view>

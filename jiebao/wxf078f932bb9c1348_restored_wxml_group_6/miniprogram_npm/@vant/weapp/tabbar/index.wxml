@@ -1,3 +1,0 @@
-<view class=" van-tabbar custom-class" style="">
-	<slot>	</slot>
-</view>

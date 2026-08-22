@@ -1,3 +1,0 @@
-<view catch:touchmove="onTouchMove" class="van-picker-column custom-class" style="height:NaN" bind:touchcancel="onTouchEnd" bind:touchend="onTouchEnd" bind:touchstart="onTouchStart">
-	<view style="transition:transform undefinedms;transform:translate3d(0, NaN, 0)">	</view>
-</view>

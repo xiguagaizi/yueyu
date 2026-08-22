@@ -1,7 +1,0 @@
-.guest-mode {
-    box-sizing: border-box;
-    display: block;
-    padding: 20rpx;
-    width: 100%;
-}
-

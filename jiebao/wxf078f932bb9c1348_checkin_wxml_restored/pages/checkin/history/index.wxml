@@ -1,7 +1,0 @@
-<van-sticky zIndex="10000">
-	<van-nav-bar title="往期打卡" leftArrow="true" bind:click-left="navBack" border="false" customClass="custom-nav" leftText="返回">	</van-nav-bar>
-	<van-dropdown-menu>
-		<van-dropdown-item data-type="filter" options="" value="" bind:change="onSwitchChange">		</van-dropdown-item>
-		<van-dropdown-item value="" bind:change="onSwitchChange" data-type="sort" options="">		</van-dropdown-item>
-	</van-dropdown-menu>
-</van-sticky>

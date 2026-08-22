@@ -1,6 +1,0 @@
-<van-transition bind:tap="onTap" customClass="van-notify__container" customStyle="" name="slide-down" show="">
-	<view class="van-notify van-notify--" style="">
-		<text>
-		</text>
-	</view>
-</van-transition>

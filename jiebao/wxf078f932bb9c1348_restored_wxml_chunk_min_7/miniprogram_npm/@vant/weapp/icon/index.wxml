@@ -1,3 +1,0 @@
-<view bindtap="onClick" class="" style="">
-	<van-info customClass="van-icon__info info-class" dot="" info="">	</van-info>
-</view>
