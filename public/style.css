@@ -11,6 +11,7 @@
   --bad: #ff6b6b;
   --tone: #c084fc;
   --radius: 14px;
+  --lesson-width: 300px;
   color-scheme: dark;
 }
 
@@ -104,12 +105,6 @@ input {
   font-size: 12px;
 }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .field {
   display: flex;
   flex-direction: column;
@@ -182,10 +177,44 @@ button.recording {
 
 .layout {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 16px;
+  grid-template-columns: var(--lesson-width) 12px minmax(0, 1fr);
+  gap: 4px;
   padding: 16px;
   align-items: start;
+}
+
+.layout-resizer {
+  position: sticky;
+  top: 78px;
+  height: calc(100vh - 96px);
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.layout-resizer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--line);
+  transition: width 0.15s, left 0.15s, background 0.15s;
+}
+
+.layout-resizer:hover::before,
+.layout-resizer:focus-visible::before,
+body.resizing-layout .layout-resizer::before {
+  left: 4px;
+  width: 4px;
+  background: var(--accent);
+}
+
+body.resizing-layout {
+  cursor: col-resize;
+  user-select: none;
 }
 
 .panel {
@@ -215,49 +244,24 @@ button.recording {
   flex-direction: column;
 }
 
-.search,
-.lesson-picker select {
+.search {
   width: 100%;
   margin-bottom: 10px;
 }
 
-.sentences {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto;
-  flex: 1;
-  min-height: 120px;
-}
-
-.sentences li {
-  padding: 8px 10px;
-  border-radius: 9px;
-  cursor: pointer;
-  border: 1px solid transparent;
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-}
-
-.sentences li:hover {
-  background: var(--panel-2);
-}
-
-.sentences li.active {
-  background: var(--panel-2);
-  border-color: var(--accent);
-}
-
-.sentences li .idx {
+.collection-picker {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
   color: var(--muted);
-  font-size: 11px;
-  min-width: 26px;
+  font-size: 12px;
 }
 
-.sentences li .day {
-  color: var(--muted);
-  font-size: 11px;
+.collection-picker select {
+  width: 100%;
+  min-width: 0;
 }
 
 .workbench {
@@ -285,53 +289,21 @@ button.recording {
   color: var(--muted);
 }
 
-.target-text {
-  margin: 4px 0;
-  font-size: 30px;
-  font-weight: 650;
-  letter-spacing: 2px;
-  line-height: 1.35;
-}
-
 .target-raw {
   margin: 0;
   color: var(--muted);
   font-size: 13px;
 }
 
-.mode-switch {
+.lesson-actions {
   display: flex;
   gap: 6px;
   align-items: center;
 }
 
-.mode-switch > button {
+.lesson-actions > button {
   padding: 4px 12px;
   font-size: 12px;
-}
-
-.mode-switch > button.on {
-  background: var(--panel);
-  border-color: var(--accent);
-  color: var(--accent);
-  font-weight: 650;
-}
-
-.target-list {
-  margin: 10px 0 0;
-  padding-left: 22px;
-  max-height: 190px;
-  overflow-y: auto;
-  font-size: 15px;
-  line-height: 1.9;
-  columns: 2;
-  column-gap: 24px;
-}
-
-@media (max-width: 760px) {
-  .target-list {
-    columns: 1;
-  }
 }
 
 /* 整课报告：每句一行 */
@@ -368,12 +340,6 @@ button.recording {
   padding-left: 30px;
 }
 
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
 .card {
   background: var(--panel-2);
   border: 1px solid var(--line);
@@ -402,12 +368,6 @@ audio {
   flex-wrap: wrap;
 }
 
-.rec-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .timer {
   font-variant-numeric: tabular-nums;
   color: var(--muted);
@@ -426,12 +386,6 @@ audio {
   width: 0%;
   background: linear-gradient(90deg, var(--accent), var(--warn), var(--bad));
   transition: width 0.08s;
-}
-
-.submit-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
 }
 
 .result {
@@ -590,6 +544,27 @@ audio {
   display: none;
 }
 
+.syl[data-say] {
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.syl[data-say]:hover {
+  background: var(--panel-2);
+}
+
+.syl[data-say]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.syllable-recording {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  height: 34px;
+}
+
 .section-title {
   font-size: 12px;
   color: var(--muted);
@@ -641,22 +616,79 @@ details.raw pre {
   list-style: none;
   margin: 0;
   padding: 0;
-  max-height: 340px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .history li {
-  border-bottom: 1px solid var(--line);
   font-size: 13px;
+}
+
+.history .h-run {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  transition: border-color 0.15s;
+}
+
+.history .h-run.open {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+.history .h-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history .h-group + .h-group {
+  margin-top: 14px;
+}
+
+.history .h-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.history .h-group-title {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.history .h-group-meta {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.history .h-group-runs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history .h-run-time {
+  margin-left: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .history .h-row {
   display: flex;
-  gap: 10px;
   align-items: center;
-  padding: 8px 6px;
+  gap: 14px;
+  padding: 12px 16px;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 12px;
 }
 
 .history .h-row:hover {
@@ -676,28 +708,69 @@ details.raw pre {
 }
 
 .history .h-score {
-  font-weight: 700;
-  min-width: 38px;
+  font-size: 22px;
+  font-weight: 800;
+  min-width: 62px;
+  flex: none;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.history .h-score i {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 2px;
+  opacity: 0.75;
+}
+
+.history .h-main {
+  flex: 1;
+  min-width: 0;
 }
 
 .history .h-text {
-  flex: 1;
+  font-weight: 600;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.history .h-meta {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 1px;
+}
+
+.history .h-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: none;
+  max-width: 34%;
+}
+
+.history .h-badges .badge {
+  padding: 2px 9px;
+  font-size: 11px;
 }
 
 .history .h-time {
   color: var(--muted);
   font-size: 11px;
   flex: none;
+  font-variant-numeric: tabular-nums;
 }
 
 .history .h-detail {
   display: none;
-  padding: 4px 6px 14px 26px;
   flex-direction: column;
   gap: 10px;
+  margin: 0 16px;
+  padding: 12px 0 16px;
+  border-top: 1px dashed var(--line);
 }
 
 .history li.open .h-detail {
@@ -706,7 +779,15 @@ details.raw pre {
 
 .history .h-detail audio {
   height: 32px;
-  max-width: 260px;
+  width: min(320px, 100%);
+}
+
+.history .h-empty {
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted);
 }
 
 .error-box {
@@ -751,16 +832,954 @@ code {
   font-size: 12px;
 }
 
-/* ------------------------------- 窄屏 / 手机 ------------------------------- */
+/* 已打卡标记 */
+.checkin-flag {
+  color: var(--accent);
+  font-weight: 650;
+  margin-left: 4px;
+  white-space: nowrap;
+}
 
-@media (max-width: 900px) {
-  .layout {
+/* 课程列表（替代下拉框）：状态一眼可扫 */
+.chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.search-row .search {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.list-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: none;
+  gap: 8px;
+  min-height: 32px;
+  margin-bottom: 10px;
+}
+
+.list-filter-bar .chips {
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.list-filter-bar .chips .chip {
+  flex: none;
+}
+
+.list-filter-bar .list-controls {
+  margin-left: auto;
+}
+
+.list-controls {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 8px;
+  margin: 0;
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.date-filter input {
+  width: 136px;
+  min-width: 0;
+  padding: 4px 7px;
+  font-size: 12px;
+}
+
+.date-filter span {
+  display: none;
+}
+
+.list-controls #sortOrder {
+  flex: none;
+  padding: 4px 7px;
+  white-space: nowrap;
+}
+
+.day-list-empty {
+  padding: 18px 8px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.chip .chip-count {
+  display: inline-block;
+  min-width: 14px;
+  margin-left: 5px;
+  padding: 0 5px;
+  border-radius: 99px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 15px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.chip:hover {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 2px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 120px;
+}
+
+.day-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.day-item:hover {
+  background: var(--panel-2);
+}
+
+.day-item.active {
+  background: var(--panel-2);
+  border-color: var(--accent);
+}
+
+.day-item .d-no {
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.day-item .d-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.day-item .d-title {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-item .d-date {
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.d-score {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.d-score.pass {
+  color: var(--accent);
+}
+
+.d-score.fail {
+  color: var(--warn);
+}
+
+.d-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+/* 顶栏页签 + 历史记录独立页 */
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tab {
+  padding: 7px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13.5px;
+  transition: all 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.history-view {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 14px 20px 36px;
+}
+
+.history-view .history-card {
+  padding: 18px 20px;
+}
+
+.history-view .panel-head {
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.history-view .panel-head h2 {
+  margin: 0;
+}
+
+.layout[hidden],
+.history-view[hidden] {
+  display: none !important;
+}
+
+.history-view .panel-head #historyStats {
+  margin-left: auto;
+}
+
+.history-view .history-search {
+  flex: 1;
+  max-width: 360px;
+  min-width: 180px;
+  margin: 0 0 0 auto;
+}
+
+/* ---------------------------- 逐句录音与评分页 ---------------------------- */
+
+.lesson-demo {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.7fr) minmax(260px, 1.3fr) auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.lesson-demo p {
+  margin: 2px 0 0;
+}
+
+.practice-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.practice-head p {
+  margin: 2px 0 0;
+}
+
+.lesson-summary[hidden] {
+  display: none !important;
+}
+
+.sentence-score {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.sentence-score-line {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.sentence-score-line strong {
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sentence-detail {
+  margin-top: 12px;
+}
+
+.sentence-detail .syllables,
+.sentence-detail .jp-compare,
+.sentence-detail .tips {
+  margin-top: 12px;
+}
+
+.page-status {
+  min-height: 20px;
+  margin: 0;
+}
+
+.lesson-summary {
+  scroll-margin-top: 92px;
+}
+
+.summary-sentences {
+  border-top: 1px solid var(--line);
+}
+
+.summary-sentence {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 4px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.summary-sentence:hover:not(:disabled) {
+  border-color: var(--line);
+  background: var(--panel);
+}
+
+.d-progress {
+  color: var(--accent-2);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.listen-btn.speaking,
+.syl.speaking {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.history-sentences {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
+  gap: 10px;
+  align-items: start;
+}
+
+.history-sentence {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--panel-2);
+}
+
+.history-sentence summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.history-sentence .hs-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.history-sentence .hs-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.history-sentence .hs-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.history-sentence > .badges,
+.history-sentence > .syllables,
+.history-sentence > .jp-compare,
+.history-sentence > audio,
+.history-sentence > button {
+  margin-top: 10px;
+}
+
+.history-sentence audio {
+  display: block;
+  width: min(360px, 100%);
+}
+
+@media (max-width: 760px) {
+  .history-sentences {
     grid-template-columns: 1fr;
-    padding: 12px;
-    gap: 12px;
   }
 
-  /* 手机上先练习、后选句；课文栏不再 sticky（否则原生音频控件会浮在句子列表上） */
+  .target-head,
+  .practice-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* ------------------------------ 连续整课文模式 ------------------------------ */
+
+.lesson-article {
+  position: relative;
+  padding: 34px 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  font-size: clamp(24px, 2.15vw, 34px);
+  font-weight: 650;
+  line-height: 2.15;
+  letter-spacing: 1.5px;
+}
+
+.article-sentence {
+  position: relative;
+  display: block;
+  margin-bottom: 0.4em;
+  border-radius: 6px;
+  outline: none;
+  transition: background 0.15s;
+}
+
+.article-sentence:hover,
+.article-sentence:focus-within,
+.article-sentence.is-recording {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.article-sentence.has-take .sentence-text {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
+}
+
+.article-char {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+
+.article-char:hover,
+.article-char:focus-visible,
+.article-char.speaking {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+  outline: none;
+}
+
+.article-punctuation {
+  white-space: pre-wrap;
+}
+
+/* 句首逐字连播按钮：尺寸随正文字号（em）联动；图标用 SVG，不受系统字体 ▶ 字形漂移影响。
+   播放中变成停止钮：图标切为方块，再点一次停止 */
+.sentence-play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.32em;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--accent);
+  vertical-align: middle;
+  translate: 0 -0.05em;
+}
+
+.sentence-play-btn svg {
+  display: block;
+  width: 48%;
+  height: auto;
+  fill: currentColor;
+}
+
+.sentence-play-btn .p-stop {
+  display: none;
+}
+
+.sentence-play-btn.speaking .p-play {
+  display: none;
+}
+
+.sentence-play-btn.speaking .p-stop {
+  display: block;
+}
+
+.sentence-play-btn:hover:not(:disabled) {
+  color: var(--accent);
+}
+
+.sentence-play-btn.speaking {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--panel-2));
+  color: var(--accent);
+}
+
+.sentence-marker {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1;
+  vertical-align: super;
+  white-space: nowrap;
+}
+
+.article-sentence > .sentence-tools {
+  position: absolute;
+  z-index: 7;
+  left: 0;
+  bottom: calc(100% - 1px);
+  display: flex;
+  width: max-content;
+  max-width: min(620px, 78vw);
+  margin: 0;
+  padding: 8px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--panel);
+  box-shadow: 0 10px 30px #0003;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(5px);
+  transition: opacity 0.12s, transform 0.12s;
+}
+
+.article-sentence:hover > .sentence-tools,
+.article-sentence:focus-within > .sentence-tools,
+.article-sentence.is-recording > .sentence-tools {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.article-sentence > .sentence-tools button {
+  padding: 6px 10px;
+  white-space: nowrap;
+}
+
+.article-sentence > .sentence-tools .timer {
+  font-size: 14px;
+}
+
+.article-sentence > .sentence-tools .sentence-status {
+  min-height: 0;
+  max-width: 190px;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.article-sentence > .meter {
+  display: none;
+}
+
+.article-sentence.is-recording > .meter {
+  position: absolute;
+  right: 0;
+  bottom: -5px;
+  left: 0;
+  display: block;
+  height: 3px;
+}
+
+.batch-actions {
+  position: sticky;
+  bottom: 14px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow: 0 10px 30px #0002;
+  backdrop-filter: blur(10px);
+}
+
+.batch-actions #scoreAllBtn {
+  min-width: 220px;
+}
+
+.summary-result-sentence {
+  border-bottom: 1px solid var(--line);
+  padding: 0 4px;
+}
+
+.summary-result-sentence > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 11px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary-result-sentence > summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary-result-sentence > .sentence-score {
+  margin: 0 0 14px 30px;
+}
+
+/* ------------------------------- 简洁布局 ------------------------------- */
+
+.workbench.panel {
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.workbench .target {
+  padding: 12px 16px;
+  background: var(--panel);
+}
+
+.workbench .target-head {
+  margin: 0;
+}
+
+.lesson-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.lesson-info .tag {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.lesson-info .target-raw {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.lesson-actions button {
+  padding: 4px 9px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+.lesson-actions button:hover:not(:disabled) {
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.workbench .lesson-demo {
+  grid-template-columns: 90px minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--panel);
+}
+
+.demo-tracks {
+  display: grid;
+  gap: 6px;
+}
+
+.demo-track {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* display:grid 会顶掉 hidden 属性的默认隐藏，这里显式声明 */
+.demo-track[hidden] {
+  display: none;
+}
+
+.demo-track audio {
+  width: 100%;
+}
+
+.demo-label {
+  min-width: 0;
+}
+
+.demo-label h3 {
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.demo-label p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lesson-demo audio {
+  height: 32px;
+}
+
+.practice-head {
+  padding: 4px 2px 0;
+}
+
+.practice-head h2 {
+  font-size: 18px;
+}
+
+.lesson-article {
+  padding: 24px 28px;
+  background: var(--panel);
+  font-size: clamp(22px, 1.65vw, 28px);
+  font-weight: 620;
+  line-height: 1.75;
+  letter-spacing: 1px;
+}
+
+.article-sentence {
+  margin-bottom: 0.22em;
+}
+
+.article-sentence:last-child {
+  margin-bottom: 0;
+}
+
+.article-sentence > .sentence-tools {
+  padding: 6px;
+  border-radius: 9px;
+  box-shadow: 0 8px 22px #0002;
+}
+
+.article-sentence > .sentence-tools button {
+  padding: 5px 9px;
+}
+
+.batch-actions {
+  position: static;
+  justify-content: flex-start;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.batch-actions #scoreAllBtn {
+  min-width: 190px;
+  padding: 10px 18px;
+}
+
+.lesson-summary {
+  background: var(--panel);
+}
+
+/* =============================  移动端 / 触屏适配  =============================
+   统一收口在文件末尾：级联顺序压过前面的桌面规则（含"简洁布局"段）。
+   断点：900px 主断点（与 app.js 三处判断一致）、760px、420px；
+   (hover: none) 额外覆盖宽屏触屏设备（iPad 横屏等），工具条与其余触屏行为一致。 */
+
+/* 触屏基础：去掉点按高亮，点字听音不触发双击缩放 */
+button,
+.day-item,
+.h-row,
+.article-char,
+.chip,
+.tab {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* --- 触屏工具条：无 hover 的设备上，每句的录音工具条常显平铺 --- */
+
+@media (max-width: 900px), (hover: none) {
+  .lesson-article {
+    padding: 22px 18px;
+    font-size: clamp(21px, 6vw, 28px);
+    line-height: 1.85;
+  }
+
+  .article-sentence {
+    margin: 0 0 18px;
+  }
+
+  /* 触屏上句首播放键加大到好点 */
+  .sentence-play-btn {
+    width: 40px;
+    height: 40px;
+    margin-right: 8px;
+  }
+
+  .article-sentence > .sentence-tools {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: none;
+    margin: 10px 0 2px;
+    padding: 0;
+    gap: 8px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 13px;
+    letter-spacing: 0;
+    line-height: 1.4;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  /* 手指点得着：主操作 44px，次操作 40px */
+  .article-sentence > .sentence-tools button {
+    min-height: 40px;
+    padding: 8px 14px;
+    white-space: nowrap;
+  }
+
+  .article-sentence > .sentence-tools .record-btn {
+    flex: 1 1 auto;
+    min-width: 120px;
+    min-height: 44px;
+  }
+
+  .article-sentence > .sentence-tools .timer {
+    min-width: 46px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* 状态独占一行，为空时不占位 */
+  .article-sentence > .sentence-tools .sentence-status {
+    flex: 1 1 100%;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    font-size: 12px;
+  }
+
+  .article-sentence > .sentence-tools .sentence-status:empty {
+    display: none;
+  }
+
+  .article-sentence.is-recording > .meter {
+    bottom: -2px;
+  }
+
+  .batch-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .batch-actions #scoreAllBtn {
+    width: 100%;
+  }
+
+  .summary-result-sentence > .sentence-score {
+    margin-left: 0;
+  }
+}
+
+/* --- ≤900px：单列布局 + 触控目标 --- */
+
+@media (max-width: 900px) {
+  html {
+    /* 跳转定位时给 sticky 顶栏留出高度 */
+    scroll-padding-top: 64px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .layout-resizer {
+    display: none;
+  }
+
+  /* 手机上先练习、后选课；侧栏不再 sticky（否则原生音频控件会浮在句子列表上） */
   .workbench {
     order: 1;
   }
@@ -771,18 +1790,12 @@ code {
     max-height: none;
   }
 
-  .sentences {
-    max-height: 46vh;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .row {
-    grid-template-columns: 1fr;
-  }
-
+  /* 顶栏：单行紧凑 */
   .topbar {
-    padding: 10px 12px;
     gap: 10px;
+    padding: 8px 12px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
   }
 
   .topbar h1 {
@@ -793,14 +1806,16 @@ code {
     display: none;
   }
 
-  .topbar-right {
-    width: 100%;
-    justify-content: space-between;
+  .logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 17px;
   }
 
-  .target-text {
-    font-size: 24px;
-    letter-spacing: 1px;
+  .tab {
+    min-height: 40px;
+    padding: 6px 16px;
   }
 
   .panel,
@@ -810,23 +1825,163 @@ code {
     padding: 12px;
   }
 
-  /* 手指点得到：主按钮整行 */
-  .rec-row {
+  /* 点得着：筛选、小按钮、下拉与输入框 */
+  .chip {
+    min-height: 38px;
+    padding: 6px 14px;
+  }
+
+  .tiny-btn {
+    min-height: 38px;
+  }
+
+  select,
+  input[type="search"],
+  input[type="password"] {
+    min-height: 40px;
+  }
+
+  /* 原生音频控件加高，进度条好按 */
+  audio,
+  .lesson-demo audio,
+  .history .h-detail audio {
+    height: 44px;
+  }
+
+  /* 课文列表（页面底部）：搜索与日期筛选各自成行 */
+  .search-row {
     flex-wrap: wrap;
   }
 
-  #recBtn,
-  #scoreBtn {
+  .date-filter {
+    flex: 1 1 100%;
+  }
+
+  .date-filter input {
     flex: 1;
-    min-width: 160px;
+    width: auto;
+    min-height: 38px;
+    padding: 6px 10px;
   }
 
-  .submit-row {
+  .day-item {
+    padding: 10px 8px;
+  }
+
+  /* 示范区：单列，原速/慢速/倍速标签列对齐 */
+  .workbench .lesson-demo {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .demo-track {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .field.inline span {
+    width: 34px;
+  }
+
+  .demo-label p {
+    white-space: normal;
+  }
+
+  .lesson-info,
+  .workbench .target-head {
+    align-items: flex-start;
+  }
+
+  .lesson-info {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .lesson-info .target-raw {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .workbench .lesson-article {
+    padding: 20px 16px;
+    font-size: clamp(20px, 5.6vw, 25px);
+    line-height: 1.7;
+  }
+
+  /* html scroll-padding-top 已给顶栏留位，这里只留小间距 */
+  .lesson-summary {
+    scroll-margin-top: 8px;
+  }
+
+  /* 评分按钮吸底：长课文录完随手可点 */
+  .batch-actions {
+    position: sticky;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    z-index: 6;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    box-shadow: 0 8px 24px #0003;
+    backdrop-filter: blur(12px);
+  }
+
+  .batch-actions #scoreAllBtn {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 18px;
+  }
+
+  /* 历史记录页：收紧内边距，句子两行截断 */
+  .history-view {
+    padding: 12px 12px 32px;
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .history-view .history-card {
+    padding: 12px;
+  }
+
+  .history-search {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .history .h-row {
     flex-wrap: wrap;
+    gap: 10px;
+    row-gap: 8px;
+    padding: 12px;
   }
 
-  .sentences li {
-    padding: 11px 10px;
+  .history .h-score {
+    min-width: 48px;
+    font-size: 20px;
+  }
+
+  .history .h-text {
+    display: -webkit-box;
+    overflow: hidden;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .history .h-badges {
+    order: 4;
+    max-width: 100%;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+
+  .history .h-detail {
+    margin: 0 12px;
+  }
+
+  .history .h-detail audio {
+    width: 100%;
   }
 
   .syl {
@@ -848,28 +2003,63 @@ code {
     font-size: 26px;
   }
 
-  .history {
-    max-height: 60vh;
-  }
-
-  .history .h-time {
-    display: none;
-  }
-
-  .history .h-detail {
-    padding-left: 8px;
-  }
-
   dialog {
     max-width: calc(100vw - 32px);
   }
 }
 
+/* --- ≤420px：小屏再收紧 --- */
+
 @media (max-width: 420px) {
-  .target-text {
-    font-size: 21px;
+  .layout {
+    padding: 10px;
   }
 
+  .topbar {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .topbar h1 {
+    font-size: 15px;
+  }
+
+  .logo {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+
+  .tab {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .panel,
+  .card,
+  .target,
+  .result {
+    padding: 10px;
+  }
+
+  .workbench .lesson-article {
+    padding: 16px 12px;
+    letter-spacing: 0.5px;
+  }
+
+  .history-view {
+    padding: 10px 8px 28px;
+  }
+
+  .history-view .history-card {
+    padding: 10px;
+  }
+
+  .history .h-row {
+    padding: 10px;
+  }
+
+  /* 旧格式历史记录的操作按钮在窄屏铺满 */
   .controls button,
   .controls select {
     flex: 1;

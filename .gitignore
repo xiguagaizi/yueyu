@@ -4,3 +4,10 @@ data/lessons.json
 recordings/
 /jiebao
 /index.html
+# 大体积音频素材（部署脚本生成/下载），不进 git
+/lessons/
+/resource/
+/resource.zip
+/robot/
+# ZCode 工作区配置
+/.zcode/

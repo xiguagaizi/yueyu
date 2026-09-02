@@ -19,6 +19,8 @@ const SERVER_KEY = process.env.CANTONESE_AI_API_KEY || '';
 const LESSON_DIR = process.env.LESSON_DIR || 'D:\\粤语打卡\\小打卡任务';
 // 示范音频目录，默认同上；指向裁过开场白的副本就能直接用（文件名要一致）
 const AUDIO_DIR = process.env.AUDIO_DIR || LESSON_DIR;
+const RESOURCE_DIR = process.env.RESOURCE_DIR || path.join(__dirname, 'resource');
+const RECORDING_DIR = process.env.RECORDING_DIR || path.join(__dirname, 'recordings');
 const PASS_SCORE = { cantonese: 90, english: 70, mandarin: 70 };
 const MOCK = process.env.MOCK_SCORE === '1'; // 没 key 时先把界面跑通
 
@@ -44,8 +46,163 @@ if (!fs.existsSync(lessonsFile)) {
   console.error('缺少 data/lessons.json，请先运行: npm run build:lessons');
   process.exit(1);
 }
-const { lessons } = JSON.parse(fs.readFileSync(lessonsFile, 'utf8'));
-const lessonByDay = new Map(lessons.map((l) => [l.day, l]));
+const resourceLessonsFile = path.join(__dirname, 'data', 'resource-lessons.json');
+const collections = [
+  {
+    id: 'original',
+    name: '初级打卡',
+    description: '现有打卡课文与原声示范',
+    audioDir: AUDIO_DIR,
+    lessons: JSON.parse(fs.readFileSync(lessonsFile, 'utf8')).lessons,
+  },
+  fs.existsSync(resourceLessonsFile) ? {
+    id: 'original-slow',
+    name: '粤语派',
+    description: 'resource 新合集，按日期收录原声与慢速示范',
+    audioDir: RESOURCE_DIR,
+    lessons: JSON.parse(fs.readFileSync(resourceLessonsFile, 'utf8')).lessons,
+  } : null,
+].filter(Boolean).map((collection) => ({
+  ...collection,
+  lessonByDay: new Map(collection.lessons.map((lesson) => [lesson.day, lesson])),
+}));
+const collectionById = new Map(collections.map((collection) => [collection.id, collection]));
+const DEFAULT_COLLECTION = collections[0];
+
+function getCollection(id) {
+  return collectionById.get(id) || DEFAULT_COLLECTION;
+}
+
+const RECORDING_EXTENSIONS = ['.wav', '.mp3', '.m4a', '.flac', '.ogg'];
+const MIME_EXTENSION = {
+  'audio/wav': '.wav',
+  'audio/x-wav': '.wav',
+  'audio/mpeg': '.mp3',
+  'audio/mp3': '.mp3',
+  'audio/mp4': '.m4a',
+  'audio/x-m4a': '.m4a',
+  'audio/flac': '.flac',
+  'audio/x-flac': '.flac',
+  'audio/ogg': '.ogg',
+};
+
+function safeRecordingName(value) {
+  return String(value).replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
+function collectionHasSentence(collection, sentenceId) {
+  return collection.lessons.some((lesson) => lesson.sentences.some((sentence) => sentence.id === sentenceId));
+}
+
+function findLatestRecording(collection, sentenceId) {
+  const directory = path.join(RECORDING_DIR, safeRecordingName(collection.id));
+  const stem = safeRecordingName(sentenceId);
+  for (const extension of RECORDING_EXTENSIONS) {
+    const file = path.join(directory, `${stem}${extension}`);
+    if (fs.existsSync(file)) return file;
+  }
+  return null;
+}
+
+function saveLatestRecording(collection, sentenceId, file) {
+  const directory = path.join(RECORDING_DIR, safeRecordingName(collection.id));
+  fs.mkdirSync(directory, { recursive: true });
+  const originalExtension = path.extname(file.originalname || '').toLowerCase();
+  const extension = RECORDING_EXTENSIONS.includes(originalExtension)
+    ? originalExtension
+    : MIME_EXTENSION[file.mimetype] || '.wav';
+  const stem = safeRecordingName(sentenceId);
+  const target = path.join(directory, `${stem}${extension}`);
+  const temporary = `${target}.${process.pid}.${Date.now()}.tmp`;
+  fs.writeFileSync(temporary, file.buffer);
+  for (const candidateExtension of RECORDING_EXTENSIONS) {
+    if (candidateExtension !== extension) fs.rmSync(path.join(directory, `${stem}${candidateExtension}`), { force: true });
+  }
+  try {
+    fs.renameSync(temporary, target);
+  } catch (error) {
+    if (!['EEXIST', 'EPERM'].includes(error.code)) {
+      fs.rmSync(temporary, { force: true });
+      throw error;
+    }
+    fs.rmSync(target, { force: true });
+    fs.renameSync(temporary, target);
+  }
+  return target;
+}
+
+// 每句成功评分存一条；一课的所有句子都评过，才算完成打卡。
+const checkinsFile = path.join(__dirname, 'data', 'checkins.json');
+
+const CJK = /[\u3400-\u9fff\uF900-\uFAFF]/;
+// 与前端合并结果同一口径：按每句标准音节数加权。
+// 老记录没有存音节数时用这个启发式：汉字各 1 个音节，拉丁/数字串（GAG、OK）按 1 组 ≈ 1 个音节。
+const syllableWeight = (text) => {
+  const cjk = [...text].filter((char) => CJK.test(char)).length;
+  const latinRuns = (text.match(/[A-Za-z0-9]+/g) || []).length;
+  return cjk + latinRuns || 1;
+};
+
+function loadCheckins() {
+  try {
+    const d = JSON.parse(fs.readFileSync(checkinsFile, 'utf8'));
+    return Array.isArray(d.records) ? d : { records: [] };
+  } catch {
+    return { records: [] };
+  }
+}
+
+function summarizeCheckins(d, collection = DEFAULT_COLLECTION) {
+  const days = {};
+  const sentences = {};
+  let total = 0;
+  for (const r of d.records) {
+    if ((r.collection || DEFAULT_COLLECTION.id) !== collection.id) continue;
+    total += 1;
+    if (!r.sentenceId) continue;
+    const current = (sentences[r.sentenceId] ||= { count: 0, bestScore: 0, lastScore: 0, lastAt: 0, threshold: 90, weight: 0 });
+    current.count += 1;
+    current.bestScore = Math.max(current.bestScore, Number(r.score) || 0);
+    current.lastScore = Number(r.score) || 0;
+    current.threshold = PASS_SCORE[r.language] ?? 90;
+    // 加权用评分分析出的标准音节数（新记录有存），老记录回退到启发式
+    current.weight = Number(r.weight) || current.weight || 0;
+    // 通过状态跟最新一次，与详情页"上一次评分结果"同口径
+    current.passed = current.lastScore >= current.threshold;
+    current.lastAt = Math.max(current.lastAt, Number(r.ts) || 0);
+  }
+  for (const lesson of collection.lessons) {
+    const completed = lesson.sentences.filter((sentence) => sentences[sentence.id]);
+    if (!completed.length) continue;
+    const sentenceCount = lesson.sentences.length;
+    const weightOf = (sentence) => sentences[sentence.id].weight || syllableWeight(sentence.text);
+    const totalWeight = completed.reduce((sum, sentence) => sum + weightOf(sentence), 0);
+    // bestScore 对外是"最新一次"的加权合并分（与评分详情一致），maxScore 是历史最高合并分
+    const bestScore = Math.round(completed.reduce((sum, sentence) => sum + sentences[sentence.id].lastScore * weightOf(sentence), 0) / totalWeight);
+    const maxScore = Math.round(completed.reduce((sum, sentence) => sum + sentences[sentence.id].bestScore * weightOf(sentence), 0) / totalWeight);
+    const threshold = sentences[completed[completed.length - 1].id].threshold ?? 90;
+    days[String(lesson.day)] = {
+      count: completed.reduce((total, sentence) => total + sentences[sentence.id].count, 0),
+      doneCount: completed.length,
+      sentenceCount,
+      complete: completed.length === sentenceCount,
+      bestScore,
+      maxScore,
+      threshold,
+      // 列表打勾与展示的最新合并分一致：达到合格线（粤语 90）即打勾
+      passed: completed.length === sentenceCount && bestScore >= threshold,
+      lastAt: Math.max(...completed.map((sentence) => sentences[sentence.id].lastAt)),
+    };
+  }
+  return { days, sentences, total };
+}
+
+function saveCheckin(rec, collection) {
+  const d = loadCheckins();
+  d.records.push(rec);
+  fs.writeFileSync(checkinsFile, JSON.stringify(d));
+  return summarizeCheckins(d, collection);
+}
 
 const app = express();
 const upload = multer({
@@ -65,22 +222,56 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-app.get('/api/lessons', (req, res) => {
+app.get('/api/collections', (req, res) => {
   res.json({
-    lessons: lessons.map((l) => ({
+    defaultCollection: DEFAULT_COLLECTION.id,
+    collections: collections.map((collection) => ({
+      id: collection.id,
+      name: collection.name,
+      description: collection.description,
+      lessonCount: collection.lessons.length,
+      sentenceCount: collection.lessons.reduce((total, lesson) => total + lesson.sentences.length, 0),
+      slowAudioCount: collection.lessons.filter((lesson) => lesson.slowAudio).length,
+    })),
+  });
+});
+
+app.get('/api/lessons', (req, res) => {
+  const collection = getCollection(req.query.collection);
+  res.json({
+    collection: collection.id,
+    lessons: collection.lessons.map((l) => ({
       day: l.day,
       title: l.title,
       hasAudio: Boolean(l.audio),
+      hasSlowAudio: Boolean(l.slowAudio),
       sentences: l.sentences,
     })),
   });
 });
 
+app.get('/api/checkins', (req, res) => {
+  res.json(summarizeCheckins(loadCheckins(), getCollection(req.query.collection)));
+});
+
+app.get('/api/recording/:sentenceId', (req, res) => {
+  const collection = getCollection(req.query.collection);
+  const sentenceId = req.params.sentenceId;
+  if (!collectionHasSentence(collection, sentenceId)) return res.status(404).json({ error: '句子不存在' });
+  const file = findLatestRecording(collection, sentenceId);
+  if (!file) return res.status(404).json({ error: '这句话还没有已保存录音' });
+  res.set('Cache-Control', 'no-store');
+  res.sendFile(file);
+});
+
 // 示范音频（支持 Range，前端可以拖进度条）
 app.get('/api/audio/:day', (req, res) => {
-  const lesson = lessonByDay.get(Number(req.params.day));
+  const collection = getCollection(req.query.collection);
+  const lesson = collection.lessonByDay.get(Number(req.params.day));
   if (!lesson || !lesson.audio) return res.status(404).json({ error: '这一课没有示范音频' });
-  const file = path.join(AUDIO_DIR, lesson.audio);
+  const audio = req.query.variant === 'slow' ? lesson.slowAudio : lesson.audio;
+  if (!audio) return res.status(404).json({ error: '这一课没有慢速示范音频' });
+  const file = path.join(collection.audioDir, audio);
   if (!fs.existsSync(file)) return res.status(404).json({ error: `示范音频不存在: ${file}` });
   res.sendFile(file);
 });
@@ -90,30 +281,45 @@ app.post('/api/score', upload.single('audio'), async (req, res) => {
   try {
     const language = req.body.language || 'cantonese';
     const apiKey = (req.body.api_key || '').trim() || SERVER_KEY;
-
-    // 整课连读时前端把每句都传过来，拼成一段送评分，回来再按句切开
-    let segments = null;
-    try {
-      const parsed = req.body.segments ? JSON.parse(req.body.segments) : null;
-      if (Array.isArray(parsed) && parsed.length) segments = parsed.map(String).filter(Boolean);
-    } catch {
-      return res.status(400).json({ error: 'segments 不是合法 JSON' });
+    const collection = getCollection(req.body.collection);
+    const day = Number(req.body.day) || null;
+    const sentenceId = (req.body.sentence_id || '').trim() || null;
+    let text = (req.body.text || '').trim();
+    if (day || sentenceId) {
+      const sentence = collection.lessonByDay.get(day)?.sentences.find((item) => item.id === sentenceId);
+      if (!sentence) return res.status(400).json({ error: '课文或句子不存在' });
+      text = sentence.text;
     }
-    const text = segments ? segments.join(' ') : (req.body.text || '').trim();
 
     if (!req.file) return res.status(400).json({ error: '没有收到音频' });
     if (!text) return res.status(400).json({ error: '没有目标句子' });
 
     if (MOCK) {
       const fake = mockScore(text);
+      const mockAnalysis = language === 'cantonese' ? analyze(fake.expectedJyutping, fake.transcribedJyutping, text) : null;
+      if (sentenceId) saveLatestRecording(collection, sentenceId, req.file);
       return res.json({
         ...fake,
         text,
-        language: 'cantonese',
-        threshold: PASS_SCORE.cantonese,
+        language,
+        threshold: PASS_SCORE[language] ?? 90,
         elapsedMs: Date.now() - started,
-        analysis: analyze(fake.expectedJyutping, fake.transcribedJyutping, text, segments),
+        analysis: mockAnalysis,
         audioBytes: req.file.size,
+        checkins: day
+          ? saveCheckin({
+              ts: Date.now(),
+              collection: collection.id,
+              day,
+              sentenceId,
+              mode: 'single',
+              language,
+              score: Math.round(fake.score ?? 0),
+              passed: Boolean(fake.passed),
+              mock: true,
+              weight: mockAnalysis?.expectedCount || syllableWeight(text),
+            }, collection)
+          : null,
       });
     }
 
@@ -129,13 +335,31 @@ app.post('/api/score', upload.single('audio'), async (req, res) => {
       req.file.originalname || 'audio.wav',
     );
 
-    const upstream = await fetch(API_URL, {
-      method: 'POST',
-      body: form,
-      signal: AbortSignal.timeout(60_000),
-    });
+    // 上游偶发 502/503/504（Cloudflare 回源抖动）时自动重试两次
+    let upstream;
+    let raw;
+    for (let attempt = 1; ; attempt++) {
+      try {
+        upstream = await fetch(API_URL, {
+          method: 'POST',
+          body: form,
+          signal: AbortSignal.timeout(60_000),
+        });
+        raw = await upstream.text();
+      } catch (err) {
+        if (attempt < 3) {
+          await new Promise((r) => setTimeout(r, 800 * attempt));
+          continue;
+        }
+        throw err;
+      }
+      if ([502, 503, 504].includes(upstream.status) && attempt < 3) {
+        await new Promise((r) => setTimeout(r, 800 * attempt));
+        continue;
+      }
+      break;
+    }
 
-    const raw = await upstream.text();
     let data;
     try {
       data = JSON.parse(raw);
@@ -153,17 +377,35 @@ app.post('/api/score', upload.single('audio'), async (req, res) => {
     const expectedJyutping = pickJyutping(data, 'expected');
     const transcribedJyutping = pickJyutping(data, 'transcribed');
 
+    const score = Math.round(data.score ?? 0);
+    const passed = score >= (PASS_SCORE[language] ?? 90);
+    const analysis = language === 'cantonese' ? analyze(expectedJyutping, transcribedJyutping, text) : null;
+    if (sentenceId) saveLatestRecording(collection, sentenceId, req.file);
+
     res.json({
       ...data,
       text,
-      segments,
       language,
       threshold: PASS_SCORE[language] ?? 90,
       expectedJyutping,
       transcribedJyutping,
       elapsedMs: Date.now() - started,
-      analysis: language === 'cantonese' ? analyze(expectedJyutping, transcribedJyutping, text, segments) : null,
+      analysis,
       audioBytes: req.file.size,
+      checkins: day
+        ? saveCheckin({
+            ts: Date.now(),
+            collection: collection.id,
+            day,
+            sentenceId,
+            mode: 'single',
+            language,
+            score,
+            passed,
+            mock: false,
+            weight: analysis?.expectedCount || syllableWeight(text),
+          }, collection)
+        : null,
     });
   } catch (err) {
     const code = err?.cause?.code || err?.code;
@@ -180,10 +422,37 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err?.message || '服务器错误' });
 });
 
+// 发音：代理在线 TTS（粤语），内存缓存，给前端逐字/整句点读兜底
+const ttsCache = new Map();
+
+app.get('/api/tts/:text', async (req, res) => {
+  const text = req.params.text.slice(0, 200);
+  if (!/^[\u3400-\u9fff\uF900-\uFAFF\u3000-\u303F\uFF00-\uFFEF，、。！？；：,.!?;:\s（）()\-]+$/.test(text)) {
+    return res.status(400).json({ error: '只支持汉字和常用标点' });
+  }
+  try {
+    let buf = ttsCache.get(text);
+    if (!buf) {
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=yue&q=${encodeURIComponent(text)}`;
+      const r = await fetch(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', Referer: 'https://translate.google.com/' },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      buf = Buffer.from(await r.arrayBuffer());
+      ttsCache.set(text, buf);
+    }
+    res.set({ 'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=86400' });
+    res.send(buf);
+  } catch (err) {
+    res.status(502).json({ error: `TTS 失败：${err.message}` });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`\n  粤语纠音 demo -> http://localhost:${PORT}`);
-  console.log(`  课文 ${lessons.length} 课，素材目录 ${LESSON_DIR}`);
-  if (AUDIO_DIR !== LESSON_DIR) console.log(`  示范音频目录 ${AUDIO_DIR}`);
+  console.log(`  合集 ${collections.length} 个，课文 ${collections.reduce((total, collection) => total + collection.lessons.length, 0)} 课`);
+  for (const collection of collections) console.log(`  - ${collection.name}: ${collection.lessons.length} 课，素材目录 ${collection.audioDir}`);
   console.log(`  API Key: ${SERVER_KEY ? '已从 .env 读取' : '未配置（可在页面右上角临时填写）'}`);
   if (PROXY) console.log(`  代理: ${PROXY} ${PROXY_ON ? '(已启用)' : '⚠ 未启用，外网请求会失败，请用 npm start'}`);
   if (MOCK) console.log('  ⚠ MOCK_SCORE=1：不会真的调接口，返回的是假数据');
