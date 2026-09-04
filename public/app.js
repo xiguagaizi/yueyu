@@ -381,9 +381,10 @@ async function restorePersistedRecordings(lesson, session, previousResult) {
   if (!candidates.length) return;
   const restored = await Promise.all(candidates.map(async (sentence) => {
     try {
+      // no-cache：带 ETag 回服务器验证，没变就 304 不重传；重录过的会拿到新文件
       const response = await fetch(
         `/api/recording/${encodeURIComponent(sentence.id)}?collection=${encodeURIComponent(state.collection)}`,
-        { cache: 'no-store' },
+        { cache: 'no-cache' },
       );
       if (response.status === 404) return false;
       if (!response.ok) throw new Error(`HTTP ${response.status}`);

@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import multer from 'multer';
@@ -210,10 +211,40 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 接口上限 10MB
 });
 
+// GET JSON 的统一出口：课文表这类大响应按 key 缓存「序列化 + gzip」结果（静态数据只算一次），
+// 带强 ETag，浏览器 If-None-Match 命中直接 304，不重传正文；gzip 把 ~500KB 的课文表压到 ~100KB。
+const jsonCache = new Map();
+
+function sendJson(req, res, payload, cacheKey) {
+  let entry = cacheKey ? jsonCache.get(cacheKey) : undefined;
+  if (!entry) {
+    const buf = Buffer.from(JSON.stringify(payload));
+    entry = {
+      buf,
+      gzip: zlib.gzipSync(buf),
+      etag: `"${zlib.crc32(buf).toString(16)}-${buf.length.toString(16)}"`,
+    };
+    if (cacheKey) jsonCache.set(cacheKey, entry);
+  }
+  res.set({
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-cache',
+    Vary: 'Accept-Encoding',
+    ETag: entry.etag,
+  });
+  const ifNoneMatch = String(req.headers['if-none-match'] || '');
+  if (ifNoneMatch && ifNoneMatch.split(',').map((tag) => tag.trim()).includes(entry.etag)) {
+    return res.status(304).end();
+  }
+  const acceptsGzip = /\bgzip\b/.test(String(req.headers['accept-encoding'] || ''));
+  if (acceptsGzip) res.set('Content-Encoding', 'gzip');
+  res.send(acceptsGzip ? entry.gzip : entry.buf);
+}
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/config', (req, res) => {
-  res.json({
+  sendJson(req, res, {
     hasServerKey: Boolean(SERVER_KEY),
     mock: MOCK,
     lessonDir: LESSON_DIR,
@@ -223,7 +254,7 @@ app.get('/api/config', (req, res) => {
 });
 
 app.get('/api/collections', (req, res) => {
-  res.json({
+  sendJson(req, res, {
     defaultCollection: DEFAULT_COLLECTION.id,
     collections: collections.map((collection) => ({
       id: collection.id,
@@ -233,12 +264,12 @@ app.get('/api/collections', (req, res) => {
       sentenceCount: collection.lessons.reduce((total, lesson) => total + lesson.sentences.length, 0),
       slowAudioCount: collection.lessons.filter((lesson) => lesson.slowAudio).length,
     })),
-  });
+  }, 'collections');
 });
 
 app.get('/api/lessons', (req, res) => {
   const collection = getCollection(req.query.collection);
-  res.json({
+  sendJson(req, res, {
     collection: collection.id,
     lessons: collection.lessons.map((l) => ({
       day: l.day,
@@ -247,11 +278,12 @@ app.get('/api/lessons', (req, res) => {
       hasSlowAudio: Boolean(l.slowAudio),
       sentences: l.sentences,
     })),
-  });
+  }, `lessons:${collection.id}`);
 });
 
 app.get('/api/checkins', (req, res) => {
-  res.json(summarizeCheckins(loadCheckins(), getCollection(req.query.collection)));
+  // 打卡记录会变，不走缓存 key，但同样有 ETag + gzip：内容没变就 304，变了才传正文
+  sendJson(req, res, summarizeCheckins(loadCheckins(), getCollection(req.query.collection)));
 });
 
 app.get('/api/recording/:sentenceId', (req, res) => {
@@ -260,7 +292,9 @@ app.get('/api/recording/:sentenceId', (req, res) => {
   if (!collectionHasSentence(collection, sentenceId)) return res.status(404).json({ error: '句子不存在' });
   const file = findLatestRecording(collection, sentenceId);
   if (!file) return res.status(404).json({ error: '这句话还没有已保存录音' });
-  res.set('Cache-Control', 'no-store');
+  // 只许浏览器缓存并带 ETag 回来验证（重录会换文件，ETag 变了自动拿新的）：
+  // 每次选课不再整文件重下，没变就是 304，0 字节
+  res.set('Cache-Control', 'private, no-cache');
   res.sendFile(file);
 });
 
@@ -273,6 +307,8 @@ app.get('/api/audio/:day', (req, res) => {
   if (!audio) return res.status(404).json({ error: '这一课没有慢速示范音频' });
   const file = path.join(collection.audioDir, audio);
   if (!fs.existsSync(file)) return res.status(404).json({ error: `示范音频不存在: ${file}` });
+  // 音频内容与 day+variant 一一对应，允许缓存但每次回源验证（ETag 没变就 304）
+  res.set('Cache-Control', 'public, no-cache');
   res.sendFile(file);
 });
 
