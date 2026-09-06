@@ -33,10 +33,19 @@ npm start
 - **单句** — 挑一句反复练
 - **整课连读** — 按顺序读完一课所有句子，录一次、评一次分，报告再拆回每一句，直接告诉你哪几句拖后腿
 
-1. **挑句子** — 左边按 Day 选课，或直接搜「问路 / 几多钱」；`随机一句` 抽查。
+1. **挑句子** — 左边按 Day 选课，或直接搜「问路 / 几多钱」；`随机一句` 抽查。筛选条下面的**最近打卡**卡片汇总本合集过去 12 小时的逐句评分（新→旧，可折叠），点一条直接跳回那句课文。
 2. **听示范** — 播放这一课的 mp3，可 0.6× 慢放跟读；顶部可切换打卡合集，新合集有慢速录音时会同时显示「原速 / 慢速」两个播放器。课文里点字听单字发音，点句首 ▶ 按顺序逐字播整句示范。
 3. **录你的** — `🎤 开始录音` 用麦克风录，或 `上传音频文件` 传已有的 wav/mp3/m4a/flac/ogg（≤10MB）。
 4. **送去评分** — 出分 + 逐字纠音报告。
+
+## 查字典
+
+顶部「查字典」页：输入**单字或整句**（简繁皆可），逐字给出粤语发音和粤拼——
+
+- **发音**：点任意汉字卡听读音，输入框右侧 `▶ 听整句` 按顺序连播整句（与课文点读同一发音源）。
+- **粤拼**：每字一张卡，粤拼声调数字标色；单字查询还会拆出**声母 / 韵母 / 声调**（含调值），多音字列出其他读法。
+- 数据来自 [CanCLID/to-jyutping](https://github.com/CanCLID/to-jyutping) 词典（`GET /api/jyutping?text=…`，整句先分词再注音，「着数」取 zoek6 sou3 这类词语读音），接口带 ETag + gzip。
+- 点读发音不用 TTS：字先查成粤拼，再播放 words.hk 的**粤拼音节库**（`public/jyutping-audio/`，每个粤拼音节一个小 mp3，Web Audio 逐音节拼接）。音库由 `npm run fetch:jyutping-audio` 从 words.hk 官方音源下载，覆盖词典全部音节；个别非标准拼式缺音频时会跳过并在状态栏提示。
 
 每句话最后一次成功评分的录音会保存到服务端 `recordings/<合集>/`，再次打卡会覆盖旧录音。可用 `.env` 的 `RECORDING_DIR` 指向持久磁盘。
 
@@ -79,12 +88,15 @@ node scripts/score-file.mjs "D:\粤语打卡\小打卡任务\day01打招呼.mp3"
 ## 结构
 
 ```
-server.mjs              Express 服务：静态页 + 课文/音频接口 + 评分代理
+server.mjs              Express 服务：静态页 + 课文/音频接口 + 评分代理 + 粤拼查询
 lib/jyutping.mjs        粤拼拆分(声母/韵母/声调) + Needleman-Wunsch 对齐 + 错误归类
 lib/mock.mjs            MOCK_SCORE=1 时的假数据
+to-jyutping             CanCLID 粤拼词典（查字典页用，整句分词注音）
 scripts/build-lessons.mjs  把「小打卡任务」的 txt + mp3 整理成 data/lessons.json
+scripts/fetch-jyutping-audio.mjs  下载 words.hk 粤拼音节库到 public/jyutping-audio/
 scripts/score-file.mjs  命令行评分
 public/                 前端（原生 JS，无构建）
+public/jyutping-audio/  粤拼音节库（2400+ 个小 mp3 ≈6MB，点读发音源）
 data/lessons.json       生成物，换素材目录后重新生成
 ```
 

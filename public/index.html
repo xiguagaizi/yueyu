@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>粤语纠音台 · cantonese.ai 发音评分</title>
+    <link rel="stylesheet" href="./vendor/flatpickr/flatpickr.min.css" />
     <link rel="stylesheet" href="./style.css" />
     <link
       rel="icon"
@@ -21,6 +22,7 @@
       </div>
       <nav class="tabs" aria-label="页面切换">
         <button id="tabHome" class="tab on" type="button">首页</button>
+        <button id="tabDict" class="tab" type="button">查字典</button>
         <button id="tabHistory" class="tab" type="button">历史记录</button>
       </nav>
     </header>
@@ -37,10 +39,11 @@
         </label>
         <div class="search-row">
           <input id="search" class="search" type="search" placeholder="搜句子 / 课名，例：问路、几多钱" />
-          <label class="date-filter" title="按日期筛选课文">
+          <div class="date-filter" title="按日期筛选课文">
             <span>日期</span>
-            <input id="dateSearch" type="date" aria-label="按日期筛选课文" />
-          </label>
+            <input id="dateSearch" type="text" inputmode="numeric" placeholder="全部日期" aria-label="按日期筛选课文" readonly />
+            <button id="dateClear" class="date-clear" type="button" aria-label="清除日期筛选" hidden>×</button>
+          </div>
         </div>
         <div class="list-filter-bar">
           <div class="chips" id="filterChips">
@@ -52,6 +55,25 @@
           <div class="list-controls">
             <button id="sortOrder" class="ghost tiny-btn" type="button" aria-label="切换日期排序">正序 ↑</button>
           </div>
+        </div>
+        <div class="recent-card" id="recentCard" hidden>
+          <button class="recent-head" id="recentToggle" type="button" aria-expanded="true" aria-controls="recentList">
+            <span class="recent-dot" aria-hidden="true"></span>
+            <span class="recent-title">最近打卡</span>
+            <span class="recent-count" id="recentCount">0</span>
+            <span class="recent-range">过去 12 小时</span>
+            <span class="recent-caret" aria-hidden="true">▾</span>
+          </button>
+          <ul class="recent-list" id="recentList"></ul>
+          <p class="recent-foot" id="recentFoot" hidden></p>
+        </div>
+        <div class="today-card" id="todayCard" title="完成整篇课文（所有句子都评分）且最后评分在今天，才算一篇今日打卡">
+          <span class="today-emoji" id="todayEmoji" aria-hidden="true">🐣</span>
+          <div class="today-info">
+            <div class="today-title" id="todayTitle">今日打卡 <b>0</b> 篇</div>
+            <div class="today-msg" id="todayMsg"></div>
+          </div>
+          <span class="today-streak" id="todayStreak" hidden></span>
         </div>
         <ul id="dayList" class="day-list"></ul>
       </aside>
@@ -143,6 +165,25 @@
       </div>
     </section>
 
+    <section class="dict-view" id="dictView" hidden>
+      <div class="panel dict-card">
+        <div class="panel-head">
+          <h2>粤拼字典</h2>
+          <span class="count" id="dictStats"></span>
+        </div>
+        <p class="muted tiny dict-intro">输入单字或句子，查每个字的粤语发音和粤拼（声母 / 韵母 / 声调），简体繁体都可以。点任意汉字听发音。</p>
+        <div class="dict-search-row">
+          <input id="dictSearch" class="search dict-search" type="search" maxlength="100" autocomplete="off" enterkeyhint="search"
+            placeholder="输入单字或句子，例：食、早晨、几多钱" aria-label="查粤拼的单字或句子" />
+          <button id="dictPlay" class="dict-play" type="button" data-say="" hidden title="按顺序播放这句话里每个字的发音">▶ 听整句</button>
+        </div>
+        <div class="dict-examples" id="dictExamples"></div>
+        <div id="dictResult" class="dict-result" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <script src="./vendor/flatpickr/flatpickr.min.js"></script>
+    <script src="./vendor/flatpickr/zh.js"></script>
     <script src="./app.js" type="module"></script>
   </body>
 </html>

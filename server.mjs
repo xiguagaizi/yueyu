@@ -4,7 +4,8 @@ import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import multer from 'multer';
-import { analyze } from './lib/jyutping.mjs';
+import { getJyutpingCandidates, getJyutpingList } from 'to-jyutping';
+import { TONE_NAMES, analyze, parseSyllable } from './lib/jyutping.mjs';
 import { mockScore } from './lib/mock.mjs';
 
 try {
@@ -153,13 +154,24 @@ function loadCheckins() {
   }
 }
 
+// 「最近打卡」窗口：只回传过去 12 小时的记录，按课去重（同一课只留最新一条），最多 200 条（新→旧）
+const RECENT_WINDOW_MS = 12 * 60 * 60 * 1000;
+const RECENT_LIMIT = 200;
+
 function summarizeCheckins(d, collection = DEFAULT_COLLECTION) {
   const days = {};
   const sentences = {};
+  const recentByDay = new Map();
   let total = 0;
+  const recentSince = Date.now() - RECENT_WINDOW_MS;
   for (const r of d.records) {
     if ((r.collection || DEFAULT_COLLECTION.id) !== collection.id) continue;
     total += 1;
+    if ((Number(r.ts) || 0) >= recentSince) {
+      const item = { ts: Number(r.ts) || 0, day: r.day, sentenceId: r.sentenceId, score: Number(r.score) || 0, passed: Boolean(r.passed), mock: Boolean(r.mock) };
+      const prev = recentByDay.get(r.day);
+      if (!prev || item.ts >= prev.ts) recentByDay.set(r.day, item);
+    }
     if (!r.sentenceId) continue;
     const current = (sentences[r.sentenceId] ||= { count: 0, bestScore: 0, lastScore: 0, lastAt: 0, threshold: 90, weight: 0 });
     current.count += 1;
@@ -195,7 +207,8 @@ function summarizeCheckins(d, collection = DEFAULT_COLLECTION) {
       lastAt: Math.max(...completed.map((sentence) => sentences[sentence.id].lastAt)),
     };
   }
-  return { days, sentences, total };
+  const recent = [...recentByDay.values()].sort((a, b) => b.ts - a.ts);
+  return { days, sentences, total, recentTotal: recent.length, recent: recent.slice(0, RECENT_LIMIT) };
 }
 
 function saveCheckin(rec, collection) {
@@ -241,6 +254,9 @@ function sendJson(req, res, payload, cacheKey) {
   res.send(acceptsGzip ? entry.gzip : entry.buf);
 }
 
+// 粤拼音节库（words.hk 音节 mp3，npm run fetch:jyutping-audio 下载）：文件内容不变，放长缓存
+app.use('/jyutping-audio', express.static(path.join(__dirname, 'public', 'jyutping-audio'), { maxAge: '30d', immutable: true }));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/config', (req, res) => {
@@ -284,6 +300,32 @@ app.get('/api/lessons', (req, res) => {
 app.get('/api/checkins', (req, res) => {
   // 打卡记录会变，不走缓存 key，但同样有 ETag + gzip：内容没变就 304，变了才传正文
   sendJson(req, res, summarizeCheckins(loadCheckins(), getCollection(req.query.collection)));
+});
+
+// 查字典：逐字粤拼 + 声母/韵母/声调 + 多音字其他读法。
+// getJyutpingList 对整句做词典分词，多音字取词语里该取的读音（多謝 → do1 ze6）。
+app.get('/api/jyutping', (req, res) => {
+  const text = String(req.query.text || '').trim().slice(0, 100);
+  if (!text) return res.status(400).json({ error: '输入点什么再查' });
+  try {
+    const items = getJyutpingList(text).map(([char, jp]) => {
+      if (!jp) return { char, jp: null };
+      const { initial, final, tone } = parseSyllable(jp);
+      const others = (getJyutpingCandidates(char)[0]?.[1] || []).filter((reading) => reading && reading !== jp);
+      return {
+        char,
+        jp,
+        initial,
+        final,
+        tone,
+        toneName: TONE_NAMES[tone] || '',
+        readings: [...new Set(others)].slice(0, 5),
+      };
+    });
+    sendJson(req, res, { text, items });
+  } catch (err) {
+    res.status(500).json({ error: `粤拼查询失败：${err.message || err}` });
+  }
 });
 
 app.get('/api/recording/:sentenceId', (req, res) => {
@@ -456,33 +498,6 @@ app.post('/api/score', upload.single('audio'), async (req, res) => {
 app.use((err, req, res, next) => {
   if (err?.code === 'LIMIT_FILE_SIZE') return res.status(413).json({ error: '音频超过 10MB，接口不收' });
   res.status(500).json({ error: err?.message || '服务器错误' });
-});
-
-// 发音：代理在线 TTS（粤语），内存缓存，给前端逐字/整句点读兜底
-const ttsCache = new Map();
-
-app.get('/api/tts/:text', async (req, res) => {
-  const text = req.params.text.slice(0, 200);
-  if (!/^[\u3400-\u9fff\uF900-\uFAFF\u3000-\u303F\uFF00-\uFFEF，、。！？；：,.!?;:\s（）()\-]+$/.test(text)) {
-    return res.status(400).json({ error: '只支持汉字和常用标点' });
-  }
-  try {
-    let buf = ttsCache.get(text);
-    if (!buf) {
-      const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=yue&q=${encodeURIComponent(text)}`;
-      const r = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)', Referer: 'https://translate.google.com/' },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      buf = Buffer.from(await r.arrayBuffer());
-      ttsCache.set(text, buf);
-    }
-    res.set({ 'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=86400' });
-    res.send(buf);
-  } catch (err) {
-    res.status(502).json({ error: `TTS 失败：${err.message}` });
-  }
 });
 
 app.listen(PORT, () => {

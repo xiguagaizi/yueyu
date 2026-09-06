@@ -10,17 +10,19 @@ const state = {
   day: null,
   runs: new Map(),
   config: {},
-  checkins: { days: {}, sentences: {}, total: 0 },
+  checkins: { days: {}, sentences: {}, total: 0, recent: [], recentTotal: 0 },
   filter: 'all',
   query: '',
   date: '',
   sort: 'asc',
+  recentOpen: localStorage.getItem('yueyu_recent_open') !== '0',
   historyFilter: 'all',
   historyQuery: '',
   session: 0,
   summarySaved: false,
   batchScoring: false,
   batchProgress: 0,
+  lastTodayCount: -1,
 };
 
 function escapeHtml(value) {
@@ -157,23 +159,18 @@ let recorder = null;
 let recordingId = null;
 let timerHandle = null;
 let playbackAudio = null;
-let sentenceAudio = null; // 整句逐字连播当前正在播的字
 let sentencePlayButton = null;
 let sayToken = 0; // 单字点读 / 整句连播共用的代次；stopPlayback 会 +1 作废正在进行的循环
+let datepicker = null; // flatpickr 实例：日期筛选弹层日历
 
 function stopPlayback() {
   playbackAudio?.pause();
   playbackAudio = null;
-  speechAudio?.pause();
-  if (sentenceAudio) {
-    sentenceAudio.pause();
-    sentenceAudio = null;
-  }
+  stopSyllableSources();
   sayToken += 1;
   sentencePlayButton?.classList.remove('speaking');
   if (sentencePlayButton) sentencePlayButton.title = SENTENCE_PLAY_TITLE;
   sentencePlayButton = null;
-  window.speechSynthesis?.cancel();
 }
 
 /* ------------------------------- 课程与卡片 ------------------------------- */
@@ -198,7 +195,7 @@ async function loadCollection() {
   const query = `?collection=${encodeURIComponent(state.collection)}`;
   const [data, checkins] = await Promise.all([
     fetch(`/api/lessons${query}`).then((response) => response.json()),
-    fetch(`/api/checkins${query}`).then((response) => response.json()).catch(() => ({ days: {}, sentences: {}, total: 0 })),
+    fetch(`/api/checkins${query}`).then((response) => response.json()).catch(() => ({ days: {}, sentences: {}, total: 0, recent: [], recentTotal: 0 })),
   ]);
   state.lessons = data.lessons || [];
   state.checkins = checkins;
@@ -207,7 +204,7 @@ async function loadCollection() {
   state.filter = 'all';
   state.date = '';
   $('search').value = '';
-  $('dateSearch').value = '';
+  if (datepicker) datepicker.clear(); else $('dateSearch').value = '';
   document.querySelectorAll('#filterChips .chip').forEach((item) => item.classList.toggle('on', item.dataset.filter === 'all'));
   updateStats();
   renderDayList();
@@ -235,6 +232,19 @@ function currentRun(sentenceId) {
 
 function isDayChecked(day) {
   return Boolean(state.checkins.days[String(day)]?.complete);
+}
+
+// 最近打卡时间的展示口径：今天/昨天带时分，同年内「M/D HH:MM」，更早带年份
+function lastCheckinText(ts) {
+  const d = new Date(Number(ts));
+  if (!ts || !Number.isFinite(d.getTime())) return '';
+  const now = new Date();
+  const sameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  const hm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  if (sameDay(d, now)) return `今天 ${hm}`;
+  if (sameDay(d, new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1))) return `昨天 ${hm}`;
+  if (d.getFullYear() === now.getFullYear()) return `${d.getMonth() + 1}/${d.getDate()} ${hm}`;
+  return `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
 }
 
 function lessonTagHtml(lesson) {
@@ -297,10 +307,11 @@ function renderDayList() {
       status = `<span class="d-progress" title="已评分 ${checkin.doneCount} 句">${checkin.doneCount}/${checkin.sentenceCount}</span>`;
     }
     const classes = ['day-item', checkin?.complete ? 'done' : '', lesson.day === state.day ? 'active' : ''].filter(Boolean).join(' ');
+    const lastText = lastCheckinText(checkin?.lastAt);
     return `<li class="${classes}" data-day="${lesson.day}">
       <span class="d-no">${String(lesson.day).padStart(2, '0')}</span>
       <span class="d-main"><span class="d-title">${escapeHtml(title)}</span><span class="d-date">${date}${lesson.hasAudio ? '' : ' · 无示范音频'}</span></span>
-      ${status}
+      <span class="d-side">${status}${lastText ? `<span class="d-last" title="最近打卡时间">${lastText}</span>` : ''}</span>
     </li>`;
   }).join('');
   if (!lessons.length) wrap.innerHTML = '<li class="day-list-empty">没有符合条件的课文</li>';
@@ -311,6 +322,95 @@ function updateStats() {
   const completed = state.lessons.filter((lesson) => isDayChecked(lesson.day)).length;
   const sentenceTotal = state.lessons.reduce((total, lesson) => total + lesson.sentences.length, 0);
   $('lessonCount').textContent = `${state.lessons.length} 天 / ${sentenceTotal} 句 · 已完成 ${completed} 天`;
+  renderTodayCard();
+  renderRecentCheckins();
+}
+
+/* 今日打卡卡片：篇数按「今天完成整课打卡」算（该课所有句子都评过分且最后一次落在今天），
+   连续天数按有练习记录的日子回推。数字比上一次多时 emoji 弹跳一下，顺便换一句粤语鼓励。 */
+const TODAY_TIERS = [
+  { min: 6, emoji: '🏆', msg: '今日打卡王就系你，够晒厉害！' },
+  { min: 4, emoji: '🌟', msg: '好叻啊！今日进步看得见' },
+  { min: 2, emoji: '💪', msg: '状态在线，越读越顺！' },
+  { min: 1, emoji: '🌱', msg: '开咗个好头，趁热打铁！' },
+  { min: 0, emoji: '🐣', msg: '今日还未打卡，录一句热下身啦～' },
+];
+
+function renderTodayCard() {
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const dayKey = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  let count = 0;
+  for (const info of Object.values(state.checkins.days || {})) {
+    if (info.complete && (Number(info.lastAt) || 0) >= startOfToday) count += 1;
+  }
+  const activeDays = new Set();
+  for (const info of Object.values(state.checkins.days || {})) {
+    if (info.lastAt) activeDays.add(dayKey(new Date(info.lastAt)));
+  }
+  let streak = 0;
+  const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  if (!activeDays.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+  while (activeDays.has(dayKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  const tier = TODAY_TIERS.find((item) => count >= item.min);
+  const card = $('todayCard');
+  card.classList.toggle('done', count > 0);
+  $('todayTitle').innerHTML = `今日打卡 <b>${count}</b> 篇`;
+  $('todayMsg').textContent = tier.msg;
+  $('todayEmoji').textContent = tier.emoji;
+
+  const streakEl = $('todayStreak');
+  streakEl.hidden = streak < 2;
+  streakEl.textContent = `🔥 连续 ${streak} 天`;
+
+  if (count > state.lastTodayCount && state.lastTodayCount !== -1) {
+    const emoji = $('todayEmoji');
+    emoji.classList.remove('pop');
+    void emoji.offsetWidth; // 重置动画
+    emoji.classList.add('pop');
+  }
+  state.lastTodayCount = count;
+}
+
+/* 最近打卡卡：服务器随 /api/checkins 回传本合集过去 12 小时的记录，同一课只保留最新一条（新→旧）。
+   样式是一张浅色渐变卡，与上面的筛选 chips 区分开；头部可折叠，点某条跳回那句课文。 */
+function renderRecentCheckins() {
+  const card = $('recentCard');
+  const recent = state.checkins.recent || [];
+  if (!recent.length) {
+    card.hidden = true;
+    return;
+  }
+  card.hidden = false;
+  card.classList.toggle('collapsed', !state.recentOpen);
+  $('recentToggle').setAttribute('aria-expanded', String(state.recentOpen));
+  $('recentCount').textContent = Number(state.checkins.recentTotal) || recent.length;
+
+  const foot = $('recentFoot');
+  const recentTotal = Number(state.checkins.recentTotal) || recent.length;
+  foot.hidden = !(state.recentOpen && recentTotal > recent.length);
+  foot.textContent = `共 ${recentTotal} 条，只显示最近 ${recent.length} 条`;
+
+  const sentenceMap = new Map();
+  for (const lesson of state.lessons) {
+    for (const sentence of lesson.sentences) sentenceMap.set(String(sentence.id), sentence.text);
+  }
+  $('recentList').innerHTML = recent.map((record) => {
+    const text = sentenceMap.get(String(record.sentenceId));
+    const jumpable = text != null;
+    const title = jumpable ? ' title="点击打开这句课文"' : '';
+    return `<li class="recent-item${jumpable ? '' : ' static'}" data-day="${record.day}" data-sentence-id="${escapeHtml(record.sentenceId || '')}"${title}>
+      <span class="r-time" title="${escapeHtml(new Date(record.ts).toLocaleString('zh-CN', { hour12: false }))}">${escapeHtml(lastCheckinText(record.ts))}</span>
+      <span class="r-no">Day ${String(record.day).padStart(2, '0')}</span>
+      <span class="r-text">${escapeHtml(text || '（课文里已找不到这句）')}</span>
+      ${record.mock ? '<span class="badge bad">模拟</span>' : ''}
+      <span class="r-score ${record.passed ? 'pass' : 'fail'}">${record.score}</span>
+    </li>`;
+  }).join('');
 }
 
 function clearRuns() {
@@ -907,136 +1007,164 @@ function handleUpload(sentenceId, file) {
 }
 
 /* ------------------------------- 点读与发音 ------------------------------- */
+// 朗读音源：words.hk 粤拼音节库（public/jyutping-audio/，每个粤拼音节一个小 mp3）。
+// 字→粤拼走 /api/jyutping（to-jyutping 词典分词，多音字按词语取读音），前端用 Web Audio 逐音节拼接播放，
+// 不再依赖浏览器 TTS / 在线 TTS 代理。
 
-let speechAudio = null;
-let voiceFailures = 0; // 本地语音连续无响应次数，超过 2 次本会话直接走服务器 TTS
-const VOICE_FAILURE_LIMIT = 2;
-const ttsUrlCache = new Map(); // clip -> objectURL，常驻复用（LRU 上限内不 revoke）
-const ttsPending = new Map(); // clip -> { promise, abort }，悬停预取与点击共用同一请求
-const TTS_CACHE_MAX = 300;
+const SYLLABLE_AUDIO_DIR = '/jyutping-audio';
+const CHAR_GAP_MS = 280; // 逐字朗读时字与字之间的停顿
+const BUFFER_CACHE_MAX = 600; // 解码后的音节缓存上限，600 个约 15MB 内存
+
+let audioContext = null;
 let hoverPrefetchTimer = 0;
+const activeSources = new Set(); // 正在发声的 Web Audio 节点，stopPlayback 统一停掉
+const jyutpingCache = new Map(); // 文本 -> Promise<Array<{char, jp}>>
+const syllableBufferCache = new Map(); // 音节 -> Promise<AudioBuffer|null>，null 表示音源缺这个音节
 
-function pickCantoVoice() {
-  const voices = window.speechSynthesis?.getVoices() || [];
-  return voices.find((voice) => /^yue/i.test(voice.lang))
-    || voices.find((voice) => /^zh[-_]HK/i.test(voice.lang))
-    || voices.find((voice) => /粤|粵/.test(voice.name))
-    || null;
+function speakContext() {
+  if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioContext.state === 'suspended') audioContext.resume().catch(() => { });
+  return audioContext;
 }
 
-function splitClips(text) {
-  const matches = text.match(/[^。！？；;]+[。！？；;]?/g) || [text];
-  return matches.reduce((items, part) => {
-    const last = items[items.length - 1];
-    if (last && last.length + part.length <= 40) items[items.length - 1] += part;
-    else items.push(part);
-    return items;
-  }, []);
+// /api/jyutping 一次最多 100 字，长文本分块查；结果按整段文本缓存，整句连播与单字点读共用
+function fetchJyutping(text) {
+  const cached = jyutpingCache.get(text);
+  if (cached) return cached;
+  const chars = [...text];
+  const chunks = [];
+  for (let i = 0; i < chars.length; i += 90) chunks.push(chars.slice(i, i + 90).join(''));
+  const pending = Promise.all(chunks.map((chunk) =>
+    fetch(`/api/jyutping?text=${encodeURIComponent(chunk)}`)
+      .then((response) => (response.ok ? response.json() : { items: [] }))
+      .then((data) => data.items || [])
+      .catch(() => [])
+  )).then((lists) => lists.flat());
+  jyutpingCache.set(text, pending);
+  return pending;
 }
 
-function requestTtsUrl(clip) {
-  const cached = ttsUrlCache.get(clip);
-  if (cached) return Promise.resolve(cached);
-  const pending = ttsPending.get(clip);
-  if (pending) return pending.promise;
-  const abort = new AbortController();
-  const promise = (async () => {
-    const response = await fetch(`/api/tts/${encodeURIComponent(clip)}`, { signal: abort.signal });
-    if (!response.ok) throw new Error(await response.json().then((data) => data.error).catch(() => `HTTP ${response.status}`));
-    const url = URL.createObjectURL(await response.blob());
-    if (ttsUrlCache.size >= TTS_CACHE_MAX) {
-      const oldest = ttsUrlCache.keys().next().value;
-      URL.revokeObjectURL(ttsUrlCache.get(oldest));
-      ttsUrlCache.delete(oldest);
-    }
-    ttsUrlCache.set(clip, url);
-    return url;
-  })().finally(() => ttsPending.delete(clip));
-  ttsPending.set(clip, { promise, abort });
-  return promise;
-}
-
-// 用本地语音念；700ms 内还没开始出声（Chrome 下 voice 静默失败的常见毛病）
-// 就 cancel 掉并返回 false。因为 TTS 音频在 say() 里已经并行下载，这里不必久等。
-function speakWithVoice(text, voice) {
-  return new Promise((resolve) => {
-    let settled = false;
-    let timer = 0;
-    const finish = (spoken) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      resolve(spoken);
-    };
-    timer = setTimeout(() => {
-      try { speechSynthesis.cancel(); } catch { }
-      voiceFailures += 1;
-      finish(false);
-    }, 700);
+// 音节 mp3 → AudioBuffer；音源缺失或解码失败缓存 null，播放时跳过该音节
+function fetchSyllableBuffer(syllable) {
+  const cached = syllableBufferCache.get(syllable);
+  if (cached) return cached;
+  const pending = (async () => {
     try {
-      speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = voice;
-      utterance.lang = voice.lang;
-      utterance.rate = 0.85;
-      utterance.onstart = () => {
-        voiceFailures = 0;
-        finish(true);
-      };
-      utterance.onend = () => finish(true);
-      // 被新的一次点读或 stopPlayback 打断时算已处理，不再兜底重播
-      utterance.onerror = (event) => finish(event.error === 'interrupted' || event.error === 'canceled');
-      speechSynthesis.speak(utterance);
+      const response = await fetch(`${SYLLABLE_AUDIO_DIR}/${syllable}.mp3`);
+      if (!response.ok) return null;
+      return await speakContext().decodeAudioData(await response.arrayBuffer());
     } catch {
-      voiceFailures += 1;
-      finish(false);
+      return null;
+    }
+  })();
+  syllableBufferCache.set(syllable, pending);
+  if (syllableBufferCache.size > BUFFER_CACHE_MAX) {
+    const oldest = syllableBufferCache.keys().next().value;
+    syllableBufferCache.delete(oldest);
+  }
+  return pending;
+}
+
+function stopSyllableSources() {
+  for (const source of activeSources) {
+    try { source.stop(); } catch { }
+  }
+  activeSources.clear();
+}
+
+// 悬停预热：把一段文本的粤拼和全部音节音频提前拉好，点击播放时零等待
+async function prefetchAudio(text) {
+  const items = (await fetchJyutping(text)).filter((item) => item.jp);
+  await Promise.allSettled(items.flatMap((item) => String(item.jp).split(/\s+/).filter(Boolean))
+    .map((syllable) => fetchSyllableBuffer(syllable)));
+}
+
+// 播完一个音节；被打断（stop）时 onended 也会触发，Promise 正常结束，由外层用 token 退出
+function playBuffer(context, buffer) {
+  return new Promise((resolve) => {
+    const source = context.createBufferSource();
+    source.buffer = buffer;
+    source.connect(context.destination);
+    const finish = () => {
+      activeSources.delete(source);
+      clearTimeout(guard);
+      resolve();
+    };
+    const guard = setTimeout(finish, buffer.duration * 1000 + 400); // onended 兜底
+    source.onended = finish;
+    activeSources.add(source);
+    try {
+      source.start();
+    } catch (error) {
+      finish();
     }
   });
 }
 
-async function say(text) {
+// 逐字播一段粤拼。items: [{ char, jp, charEl? }]；onStart/onEnd 驱动整句连播的逐字高亮。
+// 返回因缺音源而跳过的字数。
+async function speakItems(items, { token, onStart, onEnd } = {}) {
+  const context = speakContext();
+  const missing = new Set();
+  // Promise.all 的结果保持 items 顺序，播放顺序才不会因音节下载完成先后而乱
+  const resolved = await Promise.all(items.map(async (item) => {
+    const buffers = [];
+    // 常规一字一音节；这里仍按多音节兼容，防止上游返回带空格的连拼
+    for (const syllable of String(item.jp).split(/\s+/).filter(Boolean)) {
+      const buffer = await fetchSyllableBuffer(syllable);
+      if (buffer) buffers.push(buffer);
+      else missing.add(item.char);
+    }
+    return { item, buffers };
+  }));
+  const planned = resolved.filter((entry) => entry.buffers.length);
+  if (token !== sayToken) return missing.size;
+  for (const { item, buffers } of planned) {
+    if (token !== sayToken) return missing.size;
+    onStart?.(item);
+    for (const buffer of buffers) await playBuffer(context, buffer);
+    onEnd?.(item);
+    if (token !== sayToken) return missing.size;
+    await new Promise((resolve) => setTimeout(resolve, CHAR_GAP_MS));
+  }
+  return missing.size;
+}
+
+async function say(text, element = null) {
   if (!text) return;
   stopPlayback();
   const token = ++sayToken;
-  // 立刻并行拉 TTS 音频：本地语音若 700ms 内没出声，音频多半已就位，零等待播放
-  const clips = splitClips(text).map((clip) => ({ clip, url: requestTtsUrl(clip) }));
-  const voice = voiceFailures >= VOICE_FAILURE_LIMIT ? null : pickCantoVoice();
-  if (voice && (await speakWithVoice(text, voice))) return;
-  if (token !== sayToken) return;
-  speechAudio?.pause();
-  speechAudio = new Audio();
-  for (const { clip, url: loader } of clips) {
-    if (token !== sayToken) return;
-    let url;
-    try {
-      url = await loader;
-    } catch (error) {
-      if (token === sayToken) $('pageStatus').textContent = `发音失败：${error.message}`;
+  try {
+    // 课文里点的字优先用整句分词后的粤拼（多音字按词语取读音）；句内查不到再回退单字查询
+    let items = null;
+    if (text.length === 1 && element) {
+      const card = element.closest('[data-sentence-id]');
+      const chars = card ? [...card.querySelectorAll('.sentence-text .article-char')] : [];
+      const index = chars.indexOf(element);
+      const sentenceText = card?.querySelector('.sentence-text')?.textContent;
+      if (index >= 0 && sentenceText) {
+        const sentenceItems = (await fetchJyutping(sentenceText)).filter((item) => CJK.test(item.char));
+        if (token !== sayToken) return;
+        if (sentenceItems[index]?.jp) items = [sentenceItems[index]];
+      }
+    }
+    if (!items) {
+      items = (await fetchJyutping(text)).filter((item) => item.jp);
+      if (token !== sayToken) return;
+    }
+    if (!items.length) {
+      $('pageStatus').textContent = '没有查到汉字读音，输入至少一个汉字试试。';
       return;
     }
-    if (token !== sayToken) return;
-    try {
-      speechAudio.src = url;
-      await speechAudio.play();
-      // 到尾先 pause 后 ended；被打断（pause）也要能退出，不然字的高亮清不掉
-      await new Promise((resolve) => {
-        const audio = speechAudio;
-        const done = () => {
-          audio.removeEventListener('pause', done);
-          resolve();
-        };
-        audio.addEventListener('pause', done);
-        audio.addEventListener('ended', done, { once: true });
-      });
-    } catch (error) {
-      if (token === sayToken) $('pageStatus').textContent = `发音失败：${error.message}`;
-      return;
-    }
+    const missing = await speakItems(items, { token });
+    if (token === sayToken && missing) $('pageStatus').textContent = `有 ${missing} 个字暂无音节音频，已跳过。`;
+  } catch (error) {
+    if (token === sayToken) $('pageStatus').textContent = `发音失败：${error.message}`;
   }
 }
 
-// 整句连播：按课文里汉字出现的顺序，逐个播示范读音（服务器 TTS，与点字同源，已缓存）。
-// 播放中逐字高亮、按钮变停止钮；再点一次、点别的字 / 别句 / 录音都会经 stopPlayback 打断——
+// 整句连播：整句文本一次查好粤拼（词典分词，多音字读音按词取准），逐字拼接播放并高亮。
+// 播放中按钮变停止钮；再点一次、点别的字 / 别句 / 录音都会经 stopPlayback 打断——
 // 它把 sayToken +1，循环在下一次检查时退出。
 async function playSentenceChars(card) {
   const chars = [...card.querySelectorAll('.sentence-text .article-char')];
@@ -1047,49 +1175,202 @@ async function playSentenceChars(card) {
   sentencePlayButton = button;
   button.classList.add('speaking');
   button.title = '停止播放';
-  // 和 say() 一样先把整句的字并行拉好：播完一个，下一个立即可播
-  const clips = chars.map((charEl) => ({ charEl, url: requestTtsUrl(charEl.dataset.say) }));
   try {
-    for (const { charEl, url: loader } of clips) {
-      if (token !== sayToken) return;
-      let url;
-      try {
-        url = await loader;
-      } catch (error) {
-        if (token === sayToken) $('pageStatus').textContent = `发音失败：${error.message}`;
-        return;
-      }
-      if (token !== sayToken) return;
-      sentenceAudio = new Audio(url);
-      charEl.classList.add('speaking');
-      try {
-        await sentenceAudio.play();
-        // 到尾时浏览器会先发 pause 再发 ended，两个都听，被打断（pause）也能继续走
-        await new Promise((resolve) => {
-          const audio = sentenceAudio;
-          const done = () => {
-            audio.removeEventListener('pause', done);
-            resolve();
-          };
-          audio.addEventListener('pause', done);
-          audio.addEventListener('ended', done, { once: true });
-        });
-      } catch (error) {
-        if (token === sayToken) $('pageStatus').textContent = `发音失败：${error.message}`;
-        return;
-      } finally {
-        charEl.classList.remove('speaking');
-      }
+    // 用句子全文查粤拼（保留标点，分词更准）。粤拼条目按文本顺序一个不落（标点/拉丁也有条目但无粤拼，
+    // 生僻字可能超出前端渲染范围），所以只对前端会渲染成字按钮的 CJK 字推进下标，保证高亮对得齐。
+    const text = card.querySelector('.sentence-text')?.textContent || chars.map((el) => el.dataset.say).join('');
+    const items = await fetchJyutping(text);
+    if (token !== sayToken) return;
+    const planned = [];
+    let cursor = 0;
+    for (const item of items) {
+      if (!CJK.test(item.char)) continue; // 标点 / 拉丁：没有字按钮
+      const charEl = chars[cursor] || null;
+      cursor += 1;
+      if (!item.jp) continue; // 这个字查不到粤拼，播放时也会跳过
+      planned.push({ ...item, charEl });
     }
+    const missing = await speakItems(planned, {
+      token,
+      onStart: (item) => item.charEl?.classList.add('speaking'),
+      onEnd: (item) => item.charEl?.classList.remove('speaking'),
+    });
+    if (token === sayToken && missing) $('pageStatus').textContent = `有 ${missing} 个字暂无音节音频，已跳过。`;
+  } catch (error) {
+    if (token === sayToken) $('pageStatus').textContent = `发音失败：${error.message}`;
   } finally {
     // token 已被更新的播放接管时，按钮的高亮由新的那次负责
     if (token === sayToken) {
       button.classList.remove('speaking');
       button.title = SENTENCE_PLAY_TITLE;
       sentencePlayButton = null;
-      sentenceAudio = null;
     }
   }
+}
+
+/* --------------------------------- 查字典 --------------------------------- */
+
+const DICT_EXAMPLES = ['食', '着数', '早晨', '你好', '唔该', '多谢', '几多钱', '零一二三四五六七八九十'];
+const DICT_HISTORY_KEY = 'yueyu_dict_history';
+const DICT_HISTORY_LIMIT = 10;
+const DICT_LOOKUP_DELAY = 250;
+const dictCache = new Map(); // query -> 接口结果，会话内复用
+let dictTimer = 0;
+let dictRequestId = 0;
+let dictLastQuery = '';
+let dictInited = false;
+
+function loadDictHistory() {
+  try {
+    const list = JSON.parse(localStorage.getItem(DICT_HISTORY_KEY) || '[]');
+    return Array.isArray(list) ? list.filter((item) => typeof item === 'string' && item.trim()) : [];
+  } catch {
+    return [];
+  }
+}
+
+// 查到过读音的词才进历史：最近在前去重，最多 10 条
+function pushDictHistory(term) {
+  const list = loadDictHistory().filter((item) => item !== term);
+  // 输入法逐字上屏会先查到前缀中间态（「你」→「你好」）：最新一条是新词的前缀时原地替换，不堆中间记录
+  if (list.length && term.startsWith(list[0])) list.shift();
+  list.unshift(term);
+  localStorage.setItem(DICT_HISTORY_KEY, JSON.stringify(list.slice(0, DICT_HISTORY_LIMIT)));
+  renderDictExamples();
+}
+
+// 词条行：有历史搜索就显示历史（可清空），还没有则显示示例词
+function renderDictExamples() {
+  const history = loadDictHistory();
+  const chips = (history.length ? history : DICT_EXAMPLES)
+    .map((term) => `<button class="chip" data-dict-example="${escapeHtml(term)}" type="button">${escapeHtml(term)}</button>`)
+    .join('');
+  $('dictExamples').innerHTML = `
+    ${history.length ? '<span class="dict-hist-label">最近搜索</span>' : ''}
+    ${chips}
+    ${history.length ? '<button class="chip dict-hist-clear" data-dict-history-clear type="button" title="清空历史搜索">清空</button>' : ''}`;
+}
+
+function openDict() {
+  if (dictInited) return;
+  dictInited = true;
+  renderDictExamples();
+  const saved = localStorage.getItem('yueyu_dict_query') || '';
+  if (saved) {
+    $('dictSearch').value = saved;
+    lookupDict(true);
+  } else {
+    renderDictIdle();
+  }
+}
+
+function renderDictIdle() {
+  dictLastQuery = '';
+  dictRequestId += 1;
+  $('dictPlay').hidden = true;
+  $('dictStats').textContent = '';
+  $('dictResult').innerHTML = '<p class="muted tiny dict-empty">输入一个字（如：食）或一句话（如：今日天气好好），立即查每个字的粤拼和发音。</p>';
+}
+
+// 粤拼里的声调数字换个颜色，一眼看清读第几声
+function dictJpHtml(jp) {
+  const match = String(jp).match(/^([a-z]+)([1-9])$/);
+  return match ? `${escapeHtml(match[1])}<i>${match[2]}</i>` : escapeHtml(String(jp));
+}
+
+function dictCharCardHtml(item) {
+  if (!item.jp) {
+    return `<span class="dict-char plain">${escapeHtml(item.char)}</span>`;
+  }
+  const contour = String(item.toneName || '').replace(/^第.声\s*/, '');
+  const title = `点读「${item.char}」\n声母 ${item.initial || '（零声母）'} · 韵母 -${item.final}\n${item.toneName || ''}`;
+  return `<button class="dict-char" type="button" data-say="${escapeHtml(item.char)}" title="${escapeHtml(title)}">
+    <span class="dc-char">${escapeHtml(item.char)}</span>
+    <span class="dc-jp">${dictJpHtml(item.jp)}</span>
+    <span class="dc-tone">${escapeHtml(contour)}</span>
+  </button>`;
+}
+
+// 单字查询时的详情卡：声母 / 韵母 / 声调拆开讲，多音字列出其他读法
+function dictSingleHtml(item) {
+  const readings = (item.readings || [])
+    .map((reading) => `<span class="dict-reading" title="这个字还有一种读法">${dictJpHtml(reading)}</span>`)
+    .join('');
+  return `<div class="dict-single">
+    <span class="dict-single-char" data-say="${escapeHtml(item.char)}" role="button" tabindex="0" aria-label="播放「${escapeHtml(item.char)}」的发音" title="点击听「${escapeHtml(item.char)}」的发音">${escapeHtml(item.char)}</span>
+    <div class="dict-single-info">
+      <span class="dict-single-jp">${dictJpHtml(item.jp)}</span>
+      <div class="dict-single-meta">
+        <span>声母 <b>${escapeHtml(item.initial || '（零声母）')}</b></span>
+        <span>韵母 <b>-${escapeHtml(item.final)}</b></span>
+        <span>声调 <b>${escapeHtml(item.toneName || String(item.tone ?? ''))}</b></span>
+      </div>
+      ${readings ? `<div class="dict-single-readings"><span class="muted tiny">又读</span>${readings}<span class="muted tiny">多音字，词语里读音可能不同</span></div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderDict(data) {
+  const items = data.items || [];
+  const found = items.filter((item) => item.jp);
+  $('dictStats').textContent = found.length ? `${found.length} / ${items.length} 个字有粤拼` : '';
+  if (!found.length) {
+    $('dictResult').innerHTML = '<p class="muted tiny dict-empty">没有查到汉字读音，输入至少一个汉字试试（简体繁体都可以）。</p>';
+    return;
+  }
+
+  // 单字查询直接给详情卡；句子查询给整句粤拼行 + 逐字卡片
+  const isSingleChar = [...data.text].length === 1 && items[0]?.jp;
+  $('dictResult').innerHTML = `
+    ${isSingleChar ? dictSingleHtml(items[0]) : `
+      <div class="dict-jp-line" title="整句粤拼">${items.map((item) => item.jp
+        ? `<span class="dict-jp-token">${dictJpHtml(item.jp)}</span>`
+        : `<span class="dict-jp-punct">${escapeHtml(item.char)}</span>`).join('')}</div>
+      <div class="dict-chars">${items.map(dictCharCardHtml).join('')}</div>`}`;
+}
+
+function applyDictResult(query, data) {
+  if (dictLastQuery !== query) return;
+  renderDict(data);
+  const found = (data.items || []).some((item) => item.jp);
+  const play = $('dictPlay');
+  play.hidden = !found;
+  play.dataset.say = query;
+  if (found) pushDictHistory(query);
+}
+
+async function lookupDict(immediate = false) {
+  const query = $('dictSearch').value.trim();
+  clearTimeout(dictTimer);
+  if (!query) {
+    renderDictIdle();
+    return;
+  }
+  const run = async () => {
+    dictLastQuery = query;
+    localStorage.setItem('yueyu_dict_query', query);
+    const cached = dictCache.get(query);
+    if (cached) {
+      applyDictResult(query, cached);
+      return;
+    }
+    const id = ++dictRequestId;
+    $('dictResult').innerHTML = '<p class="muted tiny dict-loading">查询中…</p>';
+    try {
+      const response = await fetch(`/api/jyutping?text=${encodeURIComponent(query)}`);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || `HTTP ${response.status}`);
+      dictCache.set(query, data);
+      if (id === dictRequestId) applyDictResult(query, data);
+    } catch (error) {
+      if (id !== dictRequestId) return;
+      dictLastQuery = '';
+      $('dictStats').textContent = '';
+      $('dictResult').innerHTML = `<p class="dict-error">查询失败：${escapeHtml(error.message || String(error))}</p>`;
+    }
+  };
+  if (immediate) run();
+  else dictTimer = setTimeout(run, DICT_LOOKUP_DELAY);
 }
 
 /* --------------------------------- 历史 ---------------------------------- */
@@ -1301,15 +1582,18 @@ function scrollToEl(element) {
 
 function switchView(view) {
   const history = view === 'history';
-  $('tabHome').classList.toggle('on', !history);
+  $('tabHome').classList.toggle('on', view === 'home');
+  $('tabDict').classList.toggle('on', view === 'dict');
   $('tabHistory').classList.toggle('on', history);
-  $('homeView').hidden = history;
+  $('homeView').hidden = view !== 'home';
   $('historyView').hidden = !history;
+  $('dictView').hidden = view !== 'dict';
   if (history) {
     renderHistory();
     updateHistoryStats();
-    window.scrollTo(0, 0);
   }
+  if (view === 'dict') openDict();
+  if (view !== 'home') window.scrollTo(0, 0);
 }
 
 const SIDEBAR_WIDTH_KEY = 'yueyu_lesson_width';
@@ -1379,6 +1663,21 @@ function bind() {
     renderDayList();
   }));
 
+  $('recentToggle').addEventListener('click', () => {
+    state.recentOpen = !state.recentOpen;
+    localStorage.setItem('yueyu_recent_open', state.recentOpen ? '1' : '0');
+    renderRecentCheckins();
+  });
+
+  $('recentList').addEventListener('click', (event) => {
+    const item = event.target.closest('.recent-item');
+    if (!item || item.classList.contains('static')) return;
+    const day = Number(item.dataset.day);
+    if (!state.lessons.some((lesson) => lesson.day === day)) return;
+    const sentenceId = item.dataset.sentenceId;
+    if (selectDay(day) && sentenceId) setTimeout(() => scrollToEl(cardById(sentenceId)), 0);
+  });
+
   let searchTimer;
   $('search').addEventListener('input', (event) => {
     clearTimeout(searchTimer);
@@ -1388,10 +1687,17 @@ function bind() {
     }, 150);
   });
 
-  $('dateSearch').addEventListener('change', (event) => {
-    state.date = event.target.value;
-    renderDayList();
+  // 日期筛选：flatpickr 弹层日历（中文，样式随应用深浅主题），选完即时过滤
+  datepicker = flatpickr('#dateSearch', {
+    locale: 'zh',
+    dateFormat: 'Y-m-d',
+    onChange(selectedDates, dateStr) {
+      state.date = dateStr;
+      $('dateClear').hidden = !dateStr;
+      renderDayList();
+    },
   });
+  $('dateClear').addEventListener('click', () => datepicker.clear());
 
   $('sortOrder').addEventListener('click', () => {
     state.sort = state.sort === 'asc' ? 'desc' : 'asc';
@@ -1449,29 +1755,20 @@ function bind() {
     if (!element) return;
     event.stopPropagation();
     element.classList.add('speaking');
-    say(element.dataset.say).finally(() => element.classList.remove('speaking'));
+    say(element.dataset.say, element).finally(() => element.classList.remove('speaking'));
   }, true);
 
-  // 悬停预取：在字上停留 150ms 就提前拉好发音，点击时零等待；悬停句首播放键则预取整句每个字
+  // 悬停预取：在字/播放键上停留 150ms 就提前拉好整句粤拼和音节音频，点击时零等待
   document.addEventListener('pointerover', (event) => {
     const sayElement = event.target.closest('[data-say]');
     const playButton = sayElement ? null : event.target.closest('.sentence-play-btn');
     clearTimeout(hoverPrefetchTimer);
-    if (sayElement?.dataset.say) {
-      const text = sayElement.dataset.say;
-      hoverPrefetchTimer = setTimeout(() => {
-        for (const clip of splitClips(text)) {
-          if (!ttsUrlCache.has(clip) && !ttsPending.has(clip)) requestTtsUrl(clip).catch(() => { });
-        }
-      }, 150);
-    } else if (playButton) {
-      hoverPrefetchTimer = setTimeout(() => {
-        for (const charEl of playButton.closest('[data-sentence-id]')?.querySelectorAll('.sentence-text .article-char') || []) {
-          const clip = charEl.dataset.say;
-          if (clip && !ttsUrlCache.has(clip) && !ttsPending.has(clip)) requestTtsUrl(clip).catch(() => { });
-        }
-      }, 150);
-    }
+    if (!sayElement && !playButton) return;
+    hoverPrefetchTimer = setTimeout(() => {
+      const sentenceText = playButton?.closest('[data-sentence-id]')?.querySelector('.sentence-text')?.textContent;
+      const text = sentenceText || sayElement?.dataset.say;
+      if (text) prefetchAudio(text).catch(() => { });
+    }, 150);
   }, true);
 
   // 录音工具条摆位：悬停进新句子、键盘聚焦时重新计算（右侧优先，放不上方）
@@ -1568,11 +1865,27 @@ function bind() {
   });
 
   $('tabHome').addEventListener('click', () => switchView('home'));
+  $('tabDict').addEventListener('click', () => switchView('dict'));
   $('tabHistory').addEventListener('click', () => switchView('history'));
+
+  $('dictSearch').addEventListener('input', () => lookupDict());
+  // type=search 的 search 事件：回车立即查，点 × 清空时回到空态
+  $('dictSearch').addEventListener('search', () => lookupDict(true));
+  $('dictExamples').addEventListener('click', (event) => {
+    if (event.target.closest('[data-dict-history-clear]')) {
+      localStorage.removeItem(DICT_HISTORY_KEY);
+      renderDictExamples();
+      return;
+    }
+    const chip = event.target.closest('[data-dict-example]');
+    if (!chip) return;
+    $('dictSearch').value = chip.dataset.dictExample;
+    lookupDict(true);
+  });
 
   document.addEventListener('keydown', (event) => {
     if (event.defaultPrevented || event.target.matches('input, select, textarea, button') || event.metaKey || event.ctrlKey || event.altKey) return;
-    if (!$('historyView').hidden || event.code !== 'Space') return;
+    if ($('homeView').hidden || event.code !== 'Space') return;
     event.preventDefault();
     const audio = $('demoAudio');
     if (!audio.hidden) audio.paused ? audio.play() : audio.pause();

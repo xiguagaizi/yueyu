@@ -9,11 +9,13 @@
     "dev": "node --use-env-proxy --watch server.mjs",
     "build:lessons": "node scripts/build-lessons.mjs",
     "build:resource-lessons": "node scripts/build-resource-lessons.mjs",
+    "fetch:jyutping-audio": "node scripts/fetch-jyutping-audio.mjs",
     "score": "node --use-env-proxy scripts/score-file.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "to-jyutping": "^3.1.1"
   },
   "engines": {
     "node": ">=24"
