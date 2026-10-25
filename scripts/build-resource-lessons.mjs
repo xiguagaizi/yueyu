@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { splitAnnotatedSentences } from '../lib/lesson-source.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.resolve(process.argv[2] || process.env.RESOURCE_DIR || path.join(ROOT, 'resource'));
@@ -14,13 +15,6 @@ function clean(raw) {
     .replace(/[\s\u3000]+/g, '')
     .replace(/^[：:、,，.。．·\-—]+/, '')
     .trim();
-}
-
-function splitSentences(cantonese) {
-  return clean(cantonese)
-    .split(/(?<=[。！？!?；;])/)
-    .map((sentence) => sentence.replace(/[、,，]+$/, '').trim())
-    .filter((sentence) => sentence.length > 1);
 }
 
 if (!fs.existsSync(SRC)) {
@@ -43,7 +37,7 @@ for (const date of dates) {
   }
   if (!data?.cantonese) continue;
 
-  const sentences = splitSentences(data.cantonese);
+  const sentences = splitAnnotatedSentences(data.cantonese);
   if (!sentences.length) continue;
 
   const day = lessons.length + 1;
@@ -55,7 +49,7 @@ for (const date of dates) {
     audio: fs.existsSync(sound) && fs.statSync(sound).size > 0 ? `${date}/sound.mp3` : null,
     slowAudio: fs.existsSync(slowSound) && fs.statSync(slowSound).size > 0 ? `${date}/slowSound.mp3` : null,
     source: date,
-    sentences: sentences.map((text, index) => ({ id: `${day}-${index + 1}`, text, raw: text })),
+    sentences: sentences.map((sentence, index) => ({ id: `${day}-${index + 1}`, ...sentence })),
   });
 }
 

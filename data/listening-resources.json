@@ -1,0 +1,422 @@
+{
+  "collectedOn": "2026-10-05",
+  "timezone": "Asia/Shanghai",
+  "purpose": "个人粤语听力学习；独立于朗读课文",
+  "resources": [
+    {
+      "id": "hbl-00007",
+      "title": "早晨",
+      "category": "入门故事",
+      "level": "入门",
+      "sourceName": "Storybooks HamBaangLaang",
+      "sourceUrl": "https://global-asp.github.io/storybooks-hbl/stories/yue/00007/",
+      "originalUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00007/00007.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/hbl-00007.mp3",
+      "original": {
+        "duration": 171.964,
+        "bytes": 2767460,
+        "sha256": "eb14f1d8b827806fe16aaa534dd08b71fa4ee3c281652e6ab4cd2370e4a66264"
+      },
+      "clipPath": "public/listening-audio/hbl-00007-clip.mp3",
+      "clip": {
+        "duration": 38.088,
+        "bytes": 381165,
+        "sha256": "8a5a4de2b9320cc8138b5d9c880b4d8dcf7858ff6efcc2ec32f6e221a7ad907b"
+      },
+      "clipRecipe": {
+        "mode": "concat",
+        "segments": [
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00007/mp3/02.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00007-02.mp3",
+            "text": "今朝起身，媽媽同我講早晨。我都同媽媽講早晨。 媽媽對住我笑。",
+            "page": 2
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00007/mp3/03.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00007-03.mp3",
+            "text": "喺學校，我見到陳老師。我同陳老師講早晨， 陳老師都同我講早晨，仲讚我乖。",
+            "page": 3
+          }
+        ]
+      },
+      "transcript": "今朝起身，媽媽同我講早晨。我都同媽媽講早晨。 媽媽對住我笑。\n喺學校，我見到陳老師。我同陳老師講早晨， 陳老師都同我講早晨，仲讚我乖。",
+      "transcriptStatus": "source_text",
+      "gradingStatus": "not_prepared",
+      "attribution": "Written by：IRay Wong, Wong Tk；Read by：山奴",
+      "summary": "真人粤语朗读，按完整页面边界选段，可练习事件、人物、顺序和原因。"
+    },
+    {
+      "id": "hbl-00011",
+      "title": "我唔明白",
+      "category": "入门故事",
+      "level": "入门",
+      "sourceName": "Storybooks HamBaangLaang",
+      "sourceUrl": "https://global-asp.github.io/storybooks-hbl/stories/yue/00011/",
+      "originalUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00011/00011.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/hbl-00011.mp3",
+      "original": {
+        "duration": 134.661,
+        "bytes": 3207755,
+        "sha256": "d735bcb68fc0e3beb7015ae8d12364410d5b716cb93639a1ac78cc4f9ad8ef41"
+      },
+      "clipPath": "public/listening-audio/hbl-00011-clip.mp3",
+      "clip": {
+        "duration": 45.504,
+        "bytes": 455325,
+        "sha256": "30931d800c05516aa70e6c2f00cd148b3089a4a391e5e5d5db32cb8320959530"
+      },
+      "clipRecipe": {
+        "mode": "concat",
+        "segments": [
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00011/mp3/03.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00011-03.mp3",
+            "text": "好似今日上晝噉，爸爸媽媽同我出去玩。 我哋首先搭地鐵，我唔鍾意；",
+            "page": 3
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00011/mp3/04.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00011-04.mp3",
+            "text": "之後我哋坐船，我唔鍾意；",
+            "page": 4
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00011/mp3/05.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00011-05.mp3",
+            "text": "跟住我哋轉搭電車，我都唔鍾意；",
+            "page": 5
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00011/mp3/06.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00011-06.mp3",
+            "text": "後來我哋仲坐小巴同巴士，我全部唔鍾意。",
+            "page": 6
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00011/mp3/07.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00011-07.mp3",
+            "text": "我鍾意車仔，我問爸爸媽媽點解唔坐車仔，",
+            "page": 7
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00011/mp3/08.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00011-08.mp3",
+            "text": "爸爸媽媽話要搭公共交通工具，我唔明。",
+            "page": 8
+          }
+        ]
+      },
+      "transcript": "好似今日上晝噉，爸爸媽媽同我出去玩。 我哋首先搭地鐵，我唔鍾意；\n之後我哋坐船，我唔鍾意；\n跟住我哋轉搭電車，我都唔鍾意；\n後來我哋仲坐小巴同巴士，我全部唔鍾意。\n我鍾意車仔，我問爸爸媽媽點解唔坐車仔，\n爸爸媽媽話要搭公共交通工具，我唔明。",
+      "transcriptStatus": "source_text",
+      "gradingStatus": "not_prepared",
+      "attribution": "Written by：童敬耀, Takki；Read by：Shan",
+      "summary": "真人粤语朗读，按完整页面边界选段，可练习事件、人物、顺序和原因。"
+    },
+    {
+      "id": "hbl-00012",
+      "title": "同阿仔玩嘅一日",
+      "category": "入门故事",
+      "level": "入门",
+      "sourceName": "Storybooks HamBaangLaang",
+      "sourceUrl": "https://global-asp.github.io/storybooks-hbl/stories/yue/00012/",
+      "originalUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00012/00012.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/hbl-00012.mp3",
+      "original": {
+        "duration": 240.562,
+        "bytes": 3849821,
+        "sha256": "d5e5ac251951e44a54fb017b46e9bbfded240ba764e84df1ef116f229154a71a"
+      },
+      "clipPath": "public/listening-audio/hbl-00012-clip.mp3",
+      "clip": {
+        "duration": 48.792,
+        "bytes": 488205,
+        "sha256": "d2d9cea325c97e5fbc2f35886db54484bbc05d3292d217b7873dd78c7bce8361"
+      },
+      "clipRecipe": {
+        "mode": "concat",
+        "segments": [
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00012/mp3/03.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00012-03.mp3",
+            "text": "我哋搭船過海，天氣好好， 海上面有太陽，又有少少雲，天空好靚。",
+            "page": 3
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00012/mp3/04.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00012-04.mp3",
+            "text": "跟住，我哋搭巴士去沙灘。 我幫阿仔除鞋，先知道佢兩隻襪唔一樣。",
+            "page": 4
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00012/mp3/05.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00012-05.mp3",
+            "text": "我話：「唔好意思，爸爸幫你着錯襪啊。」",
+            "page": 5
+          }
+        ]
+      },
+      "transcript": "我哋搭船過海，天氣好好， 海上面有太陽，又有少少雲，天空好靚。\n跟住，我哋搭巴士去沙灘。 我幫阿仔除鞋，先知道佢兩隻襪唔一樣。\n我話：「唔好意思，爸爸幫你着錯襪啊。」",
+      "transcriptStatus": "source_text",
+      "gradingStatus": "not_prepared",
+      "attribution": "Written by：余該隱, Edgar Wong；Read by：山奴",
+      "summary": "真人粤语朗读，按完整页面边界选段，可练习事件、人物、顺序和原因。"
+    },
+    {
+      "id": "hbl-00103p",
+      "title": "我想要嗰個",
+      "category": "入门故事",
+      "level": "入门",
+      "sourceName": "Storybooks HamBaangLaang",
+      "sourceUrl": "https://global-asp.github.io/storybooks-hbl/stories/yue/00103p/",
+      "originalUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00103p/00103p.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/hbl-00103p.mp3",
+      "original": {
+        "duration": 310.648,
+        "bytes": 6468023,
+        "sha256": "f7fd689278132e785dfd3393c2deb65e53729f6db88e9541bea6e45a064aac63"
+      },
+      "clipPath": "public/listening-audio/hbl-00103p-clip.mp3",
+      "clip": {
+        "duration": 56.64,
+        "bytes": 566685,
+        "sha256": "0babb4ded3196e94a8cb3b7c6b3900b040baed00bcd14a7bb1123e5fbd8ddc34"
+      },
+      "clipRecipe": {
+        "mode": "concat",
+        "segments": [
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00103p/mp3/05.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00103p-05.mp3",
+            "text": "媽媽見到仔仔唔開心，諗住同仔仔出去行下。 「嚟啦，阿仔！同媽媽一齊去街市啦！」",
+            "page": 5
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00103p/mp3/06.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-00103p-06.mp3",
+            "text": "媽媽同仔仔去搵賣生果嘅伯伯。 媽媽諗住買啲蘋果返去。 仔仔見到啲橙，佢望住最下面嗰個話： 「我想要嗰個橙！」 賣生果嘅伯伯鬧佢：「唔准！你隻曳曳豬！ 你一攞走最下面個橙，上面啲橙都會跌落嚟㗎！」",
+            "page": 6
+          }
+        ]
+      },
+      "transcript": "媽媽見到仔仔唔開心，諗住同仔仔出去行下。 「嚟啦，阿仔！同媽媽一齊去街市啦！」\n媽媽同仔仔去搵賣生果嘅伯伯。 媽媽諗住買啲蘋果返去。 仔仔見到啲橙，佢望住最下面嗰個話： 「我想要嗰個橙！」 賣生果嘅伯伯鬧佢：「唔准！你隻曳曳豬！ 你一攞走最下面個橙，上面啲橙都會跌落嚟㗎！」",
+      "transcriptStatus": "source_text",
+      "gradingStatus": "not_prepared",
+      "attribution": "Written by：Mala Kumar；Read by：Jaime Ho；Translated by：一郎, 阿擇",
+      "summary": "真人粤语朗读，按完整页面边界选段，可练习事件、人物、顺序和原因。"
+    },
+    {
+      "id": "hbl-p00015",
+      "title": "新雨褸",
+      "category": "入门故事",
+      "level": "入门",
+      "sourceName": "Storybooks HamBaangLaang",
+      "sourceUrl": "https://global-asp.github.io/storybooks-hbl/stories/yue/p00015/",
+      "originalUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/p00015/p00015.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/hbl-p00015.mp3",
+      "original": {
+        "duration": 206.341,
+        "bytes": 2317957,
+        "sha256": "252ec377d2a2ca14301564c7a1f06006c27d2c3fca3d54576b0462f8916bc78c"
+      },
+      "clipPath": "public/listening-audio/hbl-p00015-clip.mp3",
+      "clip": {
+        "duration": 44.304,
+        "bytes": 443325,
+        "sha256": "f17494a8f5257a0e328cd5630b05d677ce29a9eeb4fe9fb811c55a4d53f92911"
+      },
+      "clipRecipe": {
+        "mode": "concat",
+        "segments": [
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/p00015/mp3/02.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-p00015-02.mp3",
+            "text": "星期日，文仔媽媽買咗件新雨褸畀佢。 件雨褸橙紅色，好靚，文仔好想着住佢。 媽媽話：「阿仔，雨褸淨係落雨嗰陣先着㗎咋！」",
+            "page": 2
+          },
+          {
+            "url": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/p00015/mp3/03.mp3",
+            "path": "listening-resources/originals/2026-10-05/hbl-p00015-03.mp3",
+            "text": "星期一，天氣好好，太陽好曬。啲花都開得好靚。 文仔問媽媽：「今日會唔會落雨啊？」 媽媽話：「應該唔會喇。」",
+            "page": 3
+          }
+        ]
+      },
+      "transcript": "星期日，文仔媽媽買咗件新雨褸畀佢。 件雨褸橙紅色，好靚，文仔好想着住佢。 媽媽話：「阿仔，雨褸淨係落雨嗰陣先着㗎咋！」\n星期一，天氣好好，太陽好曬。啲花都開得好靚。 文仔問媽媽：「今日會唔會落雨啊？」 媽媽話：「應該唔會喇。」",
+      "transcriptStatus": "source_text",
+      "gradingStatus": "not_prepared",
+      "attribution": "Written by：Kiran Kasturia；Translated by：一郎",
+      "summary": "真人粤语朗读，按完整页面边界选段，可练习事件、人物、顺序和原因。"
+    },
+    {
+      "id": "chatty-12642018",
+      "title": "香港饮品与茶餐厅",
+      "category": "自然对话",
+      "level": "进阶（暂定）",
+      "sourceName": "Chatty Cantonese · 粤语白白讲",
+      "sourceUrl": "https://www.buzzsprout.com/1864001/episodes/12642018-conversation-hong-kong-beverages",
+      "originalUrl": "https://www.buzzsprout.com/1864001/episodes/12642018-conversation-hong-kong-beverages.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/chatty-12642018.mp3",
+      "original": {
+        "duration": 716.079,
+        "bytes": 8670106,
+        "sha256": "17b0837a2350b1c106db02fad15f556e72e0b6f98ab2af4870ab84c8623ee908"
+      },
+      "clipPath": "public/listening-audio/chatty-12642018-preview.mp3",
+      "clip": {
+        "duration": 64.848,
+        "bytes": 648928,
+        "sha256": "1952c603cb280bfb9353c5e2f9f0acfbff99df909f9ff23fcee8c0c4de114140"
+      },
+      "clipRecipe": {
+        "mode": "slice",
+        "start": 46.359,
+        "end": 111.155
+      },
+      "transcriptUrl": "https://www.chattycantonese.com/2023/04/33-conversation-hong-kong-beverages.html",
+      "transcriptStatus": "available_at_source",
+      "gradingStatus": "not_prepared",
+      "attribution": "Cameron 与 Raymond；Chatty Cantonese",
+      "summary": "饮食文化话题，成人自然粤语交流；试听片段优先选择停顿边界，内容及切点尚未逐句校对。"
+    },
+    {
+      "id": "chatty-11815111",
+      "title": "数字时代的时间观念",
+      "category": "自然对话",
+      "level": "进阶（暂定）",
+      "sourceName": "Chatty Cantonese · 粤语白白讲",
+      "sourceUrl": "https://www.buzzsprout.com/1864001/episodes/11815111-conversation-time-in-the-digital-age",
+      "originalUrl": "https://www.buzzsprout.com/1864001/episodes/11815111-conversation-time-in-the-digital-age.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/chatty-11815111.mp3",
+      "original": {
+        "duration": 366.483,
+        "bytes": 4474953,
+        "sha256": "83e23f7e271544f2f365e03cc0be62a1132f9604b0ef186bf033c1acb8265939"
+      },
+      "clipPath": "public/listening-audio/chatty-11815111-preview.mp3",
+      "clip": {
+        "duration": 64.584,
+        "bytes": 646292,
+        "sha256": "b79041dfdfa74a57f8148e0fd850a7d005a1c56bc0c8b08615ac01731b2fe8f3"
+      },
+      "clipRecipe": {
+        "mode": "slice",
+        "start": 43.98,
+        "end": 108.516
+      },
+      "transcriptUrl": "https://www.chattycantonese.com/2022/12/29-conversation-time-in-digital-age.html",
+      "transcriptStatus": "available_at_source",
+      "gradingStatus": "not_prepared",
+      "attribution": "Cameron 与 Raymond；Chatty Cantonese",
+      "summary": "日常生活话题，成人自然粤语交流；试听片段优先选择停顿边界，内容及切点尚未逐句校对。"
+    },
+    {
+      "id": "chatty-10302884",
+      "title": "老电影台词与现代说法",
+      "category": "自然对话",
+      "level": "进阶（暂定）",
+      "sourceName": "Chatty Cantonese · 粤语白白讲",
+      "sourceUrl": "https://www.buzzsprout.com/1864001/episodes/10302884-conversation-updating-old-movie-lines",
+      "originalUrl": "https://www.buzzsprout.com/1864001/episodes/10302884-conversation-updating-old-movie-lines.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/chatty-10302884.mp3",
+      "original": {
+        "duration": 704.533,
+        "bytes": 8581016,
+        "sha256": "e8d964bad81b0910423d322d7788e81c2306ed059d9fe4c25f97aedbb1aecd51"
+      },
+      "clipPath": "public/listening-audio/chatty-10302884-preview.mp3",
+      "clip": {
+        "duration": 75.144,
+        "bytes": 801335,
+        "sha256": "f00b77a727feb15bef6dd7af16bf11375579e021b738f9e44f6456a3cbaf8969"
+      },
+      "clipRecipe": {
+        "mode": "slice",
+        "start": 40.782,
+        "end": 115.857
+      },
+      "transcriptUrl": "https://www.chattycantonese.com/",
+      "transcriptStatus": "available_at_source",
+      "gradingStatus": "not_prepared",
+      "attribution": "Cameron 与 Raymond；Chatty Cantonese",
+      "summary": "影视语言话题，成人自然粤语交流；试听片段优先选择停顿边界，内容及切点尚未逐句校对。"
+    },
+    {
+      "id": "chatty-10080759",
+      "title": "冬天想吃什么",
+      "category": "自然对话",
+      "level": "进阶（暂定）",
+      "sourceName": "Chatty Cantonese · 粤语白白讲",
+      "sourceUrl": "https://www.buzzsprout.com/1864001/episodes/10080759-conversation-winter-food-cravings",
+      "originalUrl": "https://www.buzzsprout.com/1864001/episodes/10080759-conversation-winter-food-cravings.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/chatty-10080759.mp3",
+      "original": {
+        "duration": 397.176,
+        "bytes": 4887824,
+        "sha256": "8a31e68e3eb859c75953f9342cce609516eb45abea5c24eea7e9af6d730f24d2"
+      },
+      "clipPath": "public/listening-audio/chatty-10080759-preview.mp3",
+      "clip": {
+        "duration": 66.768,
+        "bytes": 712667,
+        "sha256": "1581d503b2c6a5e5c24282cdfef2f767c103a8962ac7822b209d8a4c2f8cd583"
+      },
+      "clipRecipe": {
+        "mode": "slice",
+        "start": 43.342,
+        "end": 110.045
+      },
+      "transcriptUrl": "https://www.chattycantonese.com/2022/02/13-conversation-winter-food-cravings.html",
+      "transcriptStatus": "available_at_source",
+      "gradingStatus": "not_prepared",
+      "attribution": "Cameron 与 Raymond；Chatty Cantonese",
+      "summary": "饮食生活话题，成人自然粤语交流；试听片段优先选择停顿边界，内容及切点尚未逐句校对。"
+    },
+    {
+      "id": "rthk-reading-5785-5789",
+      "title": "一分钟阅读 · 第5785–5789集",
+      "category": "广播",
+      "level": "进阶（暂定）",
+      "sourceName": "香港电台 RTHK",
+      "sourceUrl": "https://podcast.rthk.hk/podcast/item_epi.php?pid=23&lang=zh-CN&id=266284",
+      "originalUrl": "https://podcast.rthk.hk/podcast/media/1minreading/23_2510011811_27631.mp3",
+      "originalPath": "listening-resources/originals/2026-10-05/rthk-reading-5785-5789.mp3",
+      "original": {
+        "duration": 680.934,
+        "bytes": 5456056,
+        "sha256": "ad9eff08a3fc100d995c01a0414326724158607926164493d03fc209e1af86c4"
+      },
+      "clipPath": "public/listening-audio/rthk-reading-preview.mp3",
+      "clip": {
+        "duration": 60.048,
+        "bytes": 600765,
+        "sha256": "12237ee52c21525172bc79d701f40f1c3b30a4b45d127b8145a5beceee00dded"
+      },
+      "clipRecipe": {
+        "mode": "slice",
+        "start": 30,
+        "end": 90
+      },
+      "transcriptStatus": "not_transcribed",
+      "gradingStatus": "not_prepared",
+      "attribution": "香港电台",
+      "summary": "完整广播节目及一分钟试听片段；尚未转写、逐句核对，不用于自动评分。"
+    }
+  ],
+  "downloadFailures": [
+    {
+      "source": "TVB 爱回家（YouTube）",
+      "url": "https://www.youtube.com/watch?v=Lnm3PTXt49Q",
+      "reason": "平台要求登录确认非机器人，未下载"
+    },
+    {
+      "source": "哔哩哔哩粤语对话及影视候选",
+      "urls": [
+        "https://www.bilibili.com/video/BV1g4411G7Z3/",
+        "https://www.bilibili.com/video/BV1LY4y1F7D4/",
+        "https://www.bilibili.com/video/BV1R64y1M7H1/"
+      ],
+      "reason": "HTTP 412，未下载"
+    }
+  ]
+}

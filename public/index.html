@@ -22,6 +22,7 @@
       </div>
       <nav class="tabs" aria-label="页面切换">
         <button id="tabHome" class="tab on" type="button">首页</button>
+        <button id="tabListening" class="tab" type="button">听力训练</button>
         <button id="tabDict" class="tab" type="button">查字典</button>
         <button id="tabHistory" class="tab" type="button">历史记录</button>
       </nav>
@@ -39,20 +40,21 @@
         </label>
         <div class="search-row">
           <input id="search" class="search" type="search" placeholder="搜句子 / 课名，例：问路、几多钱" />
-          <div class="date-filter" title="按日期筛选课文">
+          <div class="date-filter" title="按课文发布日期筛选（与打卡日历互不相干）">
             <span>日期</span>
-            <input id="dateSearch" type="text" inputmode="numeric" placeholder="全部日期" aria-label="按日期筛选课文" readonly />
+            <input id="dateSearch" type="text" inputmode="numeric" placeholder="全部日期" aria-label="按课文发布日期筛选，点击展开日历选择" readonly />
             <button id="dateClear" class="date-clear" type="button" aria-label="清除日期筛选" hidden>×</button>
           </div>
         </div>
         <div class="list-filter-bar">
           <div class="chips" id="filterChips">
-            <button class="chip on" data-filter="all" type="button">全部</button>
-            <button class="chip" data-filter="todo" type="button">未打卡</button>
+            <button class="chip" data-filter="all" type="button">全部</button>
+            <button class="chip on" data-filter="todo" type="button">未打卡</button>
             <button class="chip" data-filter="done" type="button">已打卡</button>
             <button class="chip" data-filter="failed" type="button">未通过</button>
           </div>
           <div class="list-controls">
+            <button id="practiceFilter" class="tiny-btn" type="button" title="正在按打卡记录日期筛选那天练过的课文，点击取消" hidden></button>
             <button id="sortOrder" class="ghost tiny-btn" type="button" aria-label="切换日期排序">正序 ↑</button>
           </div>
         </div>
@@ -67,13 +69,23 @@
           <ul class="recent-list" id="recentList"></ul>
           <p class="recent-foot" id="recentFoot" hidden></p>
         </div>
-        <div class="today-card" id="todayCard" title="完成整篇课文（所有句子都评分）且最后评分在今天，才算一篇今日打卡">
+        <div class="today-card" id="todayCard" role="button" tabindex="0" aria-expanded="false" aria-controls="checkinCalendar" title="完成整篇课文（所有句子都评分）且最后评分在今天，才算一篇今日打卡。点击展开/收起打卡日历">
           <span class="today-emoji" id="todayEmoji" aria-hidden="true">🐣</span>
           <div class="today-info">
             <div class="today-title" id="todayTitle">今日打卡 <b>0</b> 篇</div>
             <div class="today-msg" id="todayMsg"></div>
           </div>
           <span class="today-streak" id="todayStreak" hidden></span>
+        </div>
+        <div class="checkin-calendar" id="checkinCalendar" hidden>
+          <div class="cc-head">
+            <div class="cc-head-info">
+              <span class="cc-title">打卡日历</span>
+              <span class="cc-summary" id="ccSummary"></span>
+            </div>
+            <span class="cc-legend" title="颜色越深，当天打卡篇数越多" aria-hidden="true"><i></i><i></i><i></i></span>
+          </div>
+          <div class="cc-body" id="ccBody" title="点日期块按打卡记录筛选那天练过的课文"></div>
         </div>
         <ul id="dayList" class="day-list"></ul>
       </aside>
@@ -108,14 +120,16 @@
             <h3>示范</h3>
           </div>
           <div class="demo-tracks">
-            <label class="demo-track" id="originalTrack">
+            <div class="demo-track" id="originalTrack">
               <span>原速</span>
-              <audio id="demoAudio" controls preload="none"></audio>
-            </label>
-            <label class="demo-track" id="slowTrack" hidden>
+              <audio id="demoAudio" controls preload="metadata" aria-label="原速示范音频"></audio>
+              <div class="audio-recovery"><span id="demoAudioStatus" role="status" hidden></span><button id="demoAudioRetry" class="ghost tiny-btn" type="button" hidden>重试播放</button></div>
+            </div>
+            <div class="demo-track" id="slowTrack" hidden>
               <span>慢速</span>
-              <audio id="slowAudio" controls preload="none"></audio>
-            </label>
+              <audio id="slowAudio" controls preload="metadata" aria-label="慢速示范音频"></audio>
+              <div class="audio-recovery"><span id="slowAudioStatus" role="status" hidden></span><button id="slowAudioRetry" class="ghost tiny-btn" type="button" hidden>重试播放</button></div>
+            </div>
           </div>
           <label class="field inline">
             <span>倍速</span>
@@ -131,7 +145,14 @@
 
         <div class="practice-head">
           <div>
-            <h2>课文</h2>
+            <div class="lesson-title-row">
+              <h2>课文</h2>
+              <label class="field inline gap-field" title="逐字连读时字与字之间的停顿，点字听音、句首连播、字典整句、声调连读全局生效">
+                <span>连读间隔</span>
+                <input id="charGap" type="range" min="0" max="1000" step="20" value="280" aria-describedby="charGapValue" aria-label="连读间隔（毫秒）" />
+                <output id="charGapValue" for="charGap">280ms</output>
+              </label>
+            </div>
             <p class="muted tiny">点字听音 · 点句首 ▶ 逐字示范 · 移到句子上录音</p>
           </div>
           <span class="count" id="sentenceCount"></span>
@@ -140,12 +161,61 @@
         <div id="sentenceCards" class="lesson-article"></div>
         <div class="batch-actions">
           <button id="scoreAllBtn" class="primary big" type="button" disabled>评分已录音内容</button>
+          <button id="scoreFailedBtn" class="primary big" type="button" hidden>评分未通过</button>
           <span class="muted tiny" id="batchStatus"></span>
         </div>
         <div id="lessonSummary" class="result lesson-summary" hidden></div>
         <p class="muted tiny page-status" id="pageStatus"></p>
       </section>
     </main>
+
+    <section class="listening-view" id="listeningView" hidden>
+      <aside class="panel listening-sidebar">
+        <div class="panel-head"><h2>听力素材</h2><span class="count">独立练习</span></div>
+        <p class="muted tiny">听粤语，用普通话说出你理解的意思。</p>
+        <a class="listening-library-link" href="./listening-resources.html" target="_blank" rel="noopener">试听已下载的素材 ↗</a>
+        <div id="listeningTasks" class="listening-task-list"></div>
+      </aside>
+      <div class="listening-workbench">
+        <div class="panel listening-card">
+          <div class="panel-head"><h2 id="listeningTitle">听力训练</h2><span id="listeningAttemptMode" class="count">首次复述</span></div>
+          <p id="listeningService" class="muted tiny"></p>
+          <h3>1 · 听一段粤语</h3>
+          <p class="muted tiny">可以重复听或慢放，原文和参考意思在评分后显示。</p>
+          <audio id="listeningAudio" controls preload="none" aria-label="粤语听力音频"></audio>
+          <div class="listening-player-tools">
+            <button id="listeningReplay" class="ghost tiny-btn" type="button">从头听</button>
+            <span id="listeningSegment" class="muted tiny"></span>
+            <label class="field inline"><span>倍速</span><select id="listeningRate"><option value="0.8">0.8×</option><option value="1" selected>1×</option></select></label>
+            <span id="listeningPlayCount" class="muted tiny">已听 0 次</span>
+          </div>
+          <div id="listeningSource" class="muted tiny listening-source"></div>
+        </div>
+        <div class="panel listening-card">
+          <h3>2 · 用普通话复述</h3>
+          <p class="muted tiny">讲清楚发生了什么即可，不要求逐句翻译。录音后可纠正识别错字，也可以直接打字。</p>
+          <div class="listening-actions">
+            <button id="listeningRecord" class="primary" type="button">开始录音</button>
+            <label class="ghost listening-upload">上传录音<input id="listeningUpload" type="file" accept="audio/*" hidden /></label>
+            <button id="listeningTranscribe" class="ghost" type="button" hidden>识别录音</button>
+            <span id="listeningTimer" class="muted tiny"></span>
+          </div>
+          <audio id="listeningRecording" controls hidden aria-label="普通话复述录音"></audio>
+          <label class="listening-text-label" for="listeningTranscript">我的复述</label>
+          <textarea id="listeningTranscript" rows="5" maxlength="4000" placeholder="用普通话说说你听懂了什么……"></textarea>
+          <div class="listening-actions">
+            <button id="listeningGrade" class="primary" type="button" disabled>提交评分</button>
+            <button id="listeningRetry" class="ghost" type="button" hidden>再复述一次</button>
+          </div>
+          <p id="listeningStatus" class="muted tiny" role="status" aria-live="polite"></p>
+        </div>
+        <div id="listeningResult" class="panel listening-card" hidden aria-live="polite"></div>
+        <div class="panel listening-card">
+          <h3>听力练习记录</h3>
+          <div id="listeningHistory" class="listening-history"><p class="muted tiny">完成评分后，记录会保存在这里。</p></div>
+        </div>
+      </div>
+    </section>
 
     <section class="history-view" id="historyView" hidden>
       <div class="panel history-card">
@@ -171,7 +241,7 @@
           <h2>粤拼字典</h2>
           <span class="count" id="dictStats"></span>
         </div>
-        <p class="muted tiny dict-intro">输入单字或句子，查每个字的粤语发音和粤拼（声母 / 韵母 / 声调），简体繁体都可以。点任意汉字听发音。</p>
+        <p class="muted tiny dict-intro">输入单字或句子，查每个字的粤语发音和粤拼（声母 / 韵母 / 声调）；多音字按读音列出组词，可点词语查看释义和例句。简体繁体都可以，点汉字或粤拼听发音。</p>
         <div class="dict-search-row">
           <input id="dictSearch" class="search dict-search" type="search" maxlength="100" autocomplete="off" enterkeyhint="search"
             placeholder="输入单字或句子，例：食、早晨、几多钱" aria-label="查粤拼的单字或句子" />
@@ -179,6 +249,89 @@
         </div>
         <div class="dict-examples" id="dictExamples"></div>
         <div id="dictResult" class="dict-result" aria-live="polite"></div>
+      </div>
+
+      <div class="panel tones-card">
+        <div class="panel-head">
+          <h2>声调说明</h2>
+          <span class="count">粤拼 1–6 表示 6 个声调</span>
+        </div>
+        <p class="tones-text">粤拼用数字 1–6 标记粤语的六个声调，带 -p / -t / -k 韵尾的入声字只读第 1、3、6 声。按理论调值，六个声调的音高如下图所示：</p>
+        <figure class="tones-figure">
+          <svg class="tones-svg" viewBox="0 0 560 244" role="img" aria-label="六个声调的理论音高：第一声高平或高降，第二声从3升到5，第三声中平，第四声低平，第五声从2升到3.5，第六声低平">
+            <text class="col-head" x="97" y="16" text-anchor="middle">第一聲</text>
+            <text class="col-head" x="178" y="16" text-anchor="middle">第二聲</text>
+            <text class="col-head" x="259" y="16" text-anchor="middle">第三聲</text>
+            <text class="col-head" x="341" y="16" text-anchor="middle">第四聲</text>
+            <text class="col-head" x="422" y="16" text-anchor="middle">第五聲</text>
+            <text class="col-head" x="503" y="16" text-anchor="middle">第六聲</text>
+            <rect class="plot-bg" x="56" y="26" width="488" height="210" rx="10" />
+            <line class="grid" x1="56" y1="36" x2="544" y2="36" />
+            <line class="grid" x1="56" y1="86" x2="544" y2="86" />
+            <line class="grid" x1="56" y1="136" x2="544" y2="136" />
+            <line class="grid" x1="56" y1="186" x2="544" y2="186" />
+            <line class="grid" x1="56" y1="236" x2="544" y2="236" />
+            <text class="axis-num" x="46" y="40" text-anchor="end">5</text>
+            <text class="axis-num" x="46" y="90" text-anchor="end">4</text>
+            <text class="axis-num" x="46" y="140" text-anchor="end">3</text>
+            <text class="axis-num" x="46" y="190" text-anchor="end">2</text>
+            <text class="axis-num" x="46" y="240" text-anchor="end">1</text>
+            <text class="axis-name" x="14" y="120" text-anchor="middle">音</text>
+            <text class="axis-name" x="14" y="140" text-anchor="middle">高</text>
+            <text class="axis-name" x="14" y="160" text-anchor="middle">階</text>
+            <path class="contour" d="M71 36 H123"><title>第一声：高平（55），也常读成高降（53）</title></path>
+            <path class="contour-alt" d="M73 40 L119 84"><title>第一声的另一种读法：高降（53）</title></path>
+            <path class="contour" d="M152 136 L204 36"><title>第二声：高升（35）</title></path>
+            <path class="contour" d="M233 136 H285"><title>第三声：中平（33）</title></path>
+            <path class="contour" d="M314 236 H366"><title>第四声：低平（11），实际口语音高常略降</title></path>
+            <path class="contour" d="M395 186 L447 111"><title>第五声：低升（23）</title></path>
+            <path class="contour" d="M477 186 H529"><title>第六声：低平（22）</title></path>
+            <text class="contour-label" x="97" y="31" text-anchor="middle">高平</text>
+            <text class="contour-label" x="96" y="103" text-anchor="middle">高降</text>
+          </svg>
+        </figure>
+        <p class="tones-text">由上图可见，第 4 声的音高是最低的。实际发音时，不容易一开口就把音高压到最低，因此口语里第 4 声的音高往往不是平的，而是降的，如下图：</p>
+        <figure class="tones-figure">
+          <svg class="tones-svg" viewBox="0 0 560 244" role="img" aria-label="六个声调的实际调值：1调高平5，2调从3升到5，3调中平3，4调从2降到1，5调从2升到3，6调低平2">
+            <text class="col-head" x="97" y="16" text-anchor="middle">1调</text>
+            <text class="col-head" x="178" y="16" text-anchor="middle">2调</text>
+            <text class="col-head" x="259" y="16" text-anchor="middle">3调</text>
+            <text class="col-head" x="341" y="16" text-anchor="middle">4调</text>
+            <text class="col-head" x="422" y="16" text-anchor="middle">5调</text>
+            <text class="col-head" x="503" y="16" text-anchor="middle">6调</text>
+            <rect class="plot-bg" x="56" y="28" width="488" height="208" rx="10" />
+            <line class="grid" x1="56" y1="36" x2="544" y2="36" />
+            <line class="grid" x1="56" y1="86" x2="544" y2="86" />
+            <line class="grid" x1="56" y1="136" x2="544" y2="136" />
+            <line class="grid" x1="56" y1="186" x2="544" y2="186" />
+            <line class="grid" x1="56" y1="236" x2="544" y2="236" />
+            <text class="axis-num" x="46" y="40" text-anchor="end">5</text>
+            <text class="axis-num" x="46" y="90" text-anchor="end">4</text>
+            <text class="axis-num" x="46" y="140" text-anchor="end">3</text>
+            <text class="axis-num" x="46" y="190" text-anchor="end">2</text>
+            <text class="axis-num" x="46" y="240" text-anchor="end">1</text>
+            <text class="axis-name" x="14" y="128" text-anchor="middle">调</text>
+            <text class="axis-name" x="14" y="148" text-anchor="middle">值</text>
+            <path class="contour" d="M71 36 H123"><title>1调：高平（55）</title></path>
+            <path class="contour" d="M152 136 L204 36"><title>2调：高升（35）</title></path>
+            <path class="contour" d="M233 136 H285"><title>3调：中平（33）</title></path>
+            <path class="contour" d="M314 186 L366 236"><title>4调：低降（21），实际发音是降的不是平的</title></path>
+            <path class="contour" d="M395 186 L447 136"><title>5调：低升（23）</title></path>
+            <path class="contour" d="M477 186 H529"><title>6调：低平（22）</title></path>
+          </svg>
+        </figure>
+        <p class="tones-text">例如：用「詩 史 試 時 市 事」六个字就能依次感受第 1–6 声的音高差别。点单字听单个音，点按钮按 1–6 声连读：</p>
+        <div class="tones-demo">
+          <button id="tonesPlayAll" class="dict-play" type="button" title="按 1–6 声顺序连读，播放中再点一次停止">▶ 连读六个字</button>
+          <div class="dict-chars tones-chars" id="tonesChars">
+            <button class="dict-char" type="button" data-say="詩" data-jp="si1" title="点读「詩」· 第1声 高平"><span class="dc-char">詩</span><span class="dc-jp">si<i>1</i></span><span class="dc-tone">高平</span></button>
+            <button class="dict-char" type="button" data-say="史" data-jp="si2" title="点读「史」· 第2声 高升"><span class="dc-char">史</span><span class="dc-jp">si<i>2</i></span><span class="dc-tone">高升</span></button>
+            <button class="dict-char" type="button" data-say="試" data-jp="si3" title="点读「試」· 第3声 中平"><span class="dc-char">試</span><span class="dc-jp">si<i>3</i></span><span class="dc-tone">中平</span></button>
+            <button class="dict-char" type="button" data-say="時" data-jp="si4" title="点读「時」· 第4声 低降"><span class="dc-char">時</span><span class="dc-jp">si<i>4</i></span><span class="dc-tone">低降</span></button>
+            <button class="dict-char" type="button" data-say="市" data-jp="si5" title="点读「市」· 第5声 低升"><span class="dc-char">市</span><span class="dc-jp">si<i>5</i></span><span class="dc-tone">低升</span></button>
+            <button class="dict-char" type="button" data-say="事" data-jp="si6" title="点读「事」· 第6声 低平"><span class="dc-char">事</span><span class="dc-jp">si<i>6</i></span><span class="dc-tone">低平</span></button>
+          </div>
+        </div>
       </div>
     </section>
 

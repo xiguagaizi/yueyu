@@ -7,14 +7,23 @@
   "scripts": {
     "start": "node --use-env-proxy server.mjs",
     "dev": "node --use-env-proxy --watch server.mjs",
+    "db:setup": "node scripts/setup-mysql.mjs",
+    "db:migrate": "node scripts/migrate-to-mysql.mjs",
     "build:lessons": "node scripts/build-lessons.mjs",
     "build:resource-lessons": "node scripts/build-resource-lessons.mjs",
+    "build:dictionary-index": "node --use-env-proxy scripts/build-dictionary-index.mjs",
+    "build:private-dictionary": "python3 scripts/build-private-dictionary.py",
+    "test:dictionary": "node test/dictionary.test.mjs",
+    "test:lessons": "node --test test/lesson-source.test.mjs test/lesson-playback.test.mjs test/audio-player.test.mjs",
+    "test:scoring": "node --test test/pronunciation-score.test.mjs test/score-route.test.mjs test/score-ui.test.mjs",
+    "test:listening": "node --test test/listening.test.mjs",
     "fetch:jyutping-audio": "node scripts/fetch-jyutping-audio.mjs",
     "score": "node --use-env-proxy scripts/score-file.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
     "multer": "^2.0.2",
+    "mysql2": "^3.24.3",
     "to-jyutping": "^3.1.1"
   },
   "engines": {

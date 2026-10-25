@@ -2,6 +2,7 @@ node_modules/
 .env
 data/lessons.json
 recordings/
+/data/private/
 /jiebao
 /index.html
 # 大体积音频素材（部署脚本生成/下载），不进 git
@@ -9,5 +10,20 @@ recordings/
 /resource/
 /resource.zip
 /robot/
+# 听力下载的原始节目和短音频；来源与剪辑清单保存在 data/listening-resources.json
+/listening-resources/originals/
+/public/listening-audio/
 # ZCode 工作区配置
 /.zcode/
+
+/listening-resources/*.zip
+
+# Server dependencies, private records and generated assets
+/node_modules
+.env.*
+!.env.example
+/data/checkins.json
+/data/checkin-details.jsonl
+/docs/score-audit-*/
+/public/jyutping-audio/
+/*-original-differences.zip

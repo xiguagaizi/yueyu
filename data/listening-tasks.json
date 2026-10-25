@@ -1,0 +1,249 @@
+[
+  {
+    "id": "hbl-outing-1",
+    "title": "出行计划",
+    "level": "入门",
+    "rubricVersion": "1",
+    "source": {
+      "name": "Storybooks HamBaangLaang · 出街玩",
+      "url": "https://global-asp.github.io/storybooks-hbl/stories/yue/00001/",
+      "attribution": "雞先生、魚魚老師创作；Edwin 朗读；Storybooks HamBaangLaang 提供音频。",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "segments": [
+      {
+        "audioUrl": "/listening-audio/hbl-00001-02.mp3",
+        "text": "今日雞先生同An鴨想出市區玩。",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/02.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-03.mp3",
+        "text": "雞先生問：「點樣搭車出去呀？」An鴨答：「唔知呀！」",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/03.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-04.mp3",
+        "text": "雞先生話：「我哋可唔可以行路去呢？」",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/04.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-05.mp3",
+        "text": "雖然唔使錢，但係太遠喇，佢哋行唔到！",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/05.mp3"
+      }
+    ],
+    "reference": "两位朋友想去市区玩，还不清楚怎么乘车。其中一位提议步行，虽然不用花钱，但距离太远，走不到。",
+    "facts": [
+      {
+        "id": "f1",
+        "category": "main",
+        "label": "理解这是一段商量外出交通方式的对话（不要求复述所有细节）",
+        "weight": 40,
+        "segment": 0
+      },
+      {
+        "id": "f2",
+        "category": "detail",
+        "label": "目的地是市区",
+        "weight": 10,
+        "segment": 0
+      },
+      {
+        "id": "f3",
+        "category": "detail",
+        "label": "还不知道怎么乘车",
+        "weight": 10,
+        "segment": 1
+      },
+      {
+        "id": "f4",
+        "category": "detail",
+        "label": "有人提议走路",
+        "weight": 10,
+        "segment": 2
+      },
+      {
+        "id": "f5",
+        "category": "detail",
+        "label": "走路不用花钱",
+        "weight": 10,
+        "segment": 3
+      },
+      {
+        "id": "f6",
+        "category": "logic",
+        "label": "因为距离太远，所以无法步行过去",
+        "weight": 20,
+        "segment": 3
+      }
+    ]
+  },
+  {
+    "id": "hbl-outing-2",
+    "title": "继续商量",
+    "level": "入门",
+    "rubricVersion": "1",
+    "source": {
+      "name": "Storybooks HamBaangLaang · 出街玩",
+      "url": "https://global-asp.github.io/storybooks-hbl/stories/yue/00001/",
+      "attribution": "雞先生、魚魚老師创作；Edwin 朗读；Storybooks HamBaangLaang 提供音频。",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "segments": [
+      {
+        "audioUrl": "/listening-audio/hbl-00001-06.mp3",
+        "text": "An鴨話：「噉不如我哋搭地鐵吖！」",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/06.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-07.mp3",
+        "text": "雖然地鐵可以去到好多地方，但係地鐵站閂咗，佢哋冇得搭呀！",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/07.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-08.mp3",
+        "text": "雞先生話：「噉我哋可唔可以搭小巴呢？」",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/08.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-09.mp3",
+        "text": "雖然小巴好快，但係好少位，要排好耐隊！",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/09.mp3"
+      }
+    ],
+    "reference": "两位朋友先考虑乘地铁，但车站已经关闭，无法乘坐；接着考虑小巴，小巴虽然快，但座位少，需要排很久的队。",
+    "facts": [
+      {
+        "id": "f1",
+        "category": "main",
+        "label": "理解这是一段考虑交通方式却遇到困难的对话（不要求复述所有细节）",
+        "weight": 40,
+        "segment": 0
+      },
+      {
+        "id": "f2",
+        "category": "detail",
+        "label": "有人建议乘地铁",
+        "weight": 10,
+        "segment": 0
+      },
+      {
+        "id": "f3",
+        "category": "detail",
+        "label": "地铁能到很多地方",
+        "weight": 10,
+        "segment": 1
+      },
+      {
+        "id": "f4",
+        "category": "detail",
+        "label": "之后有人建议乘小巴",
+        "weight": 10,
+        "segment": 2
+      },
+      {
+        "id": "f5",
+        "category": "detail",
+        "label": "小巴速度快",
+        "weight": 10,
+        "segment": 3
+      },
+      {
+        "id": "f6",
+        "category": "logic",
+        "label": "因为地铁站已经关闭，所以无法乘地铁",
+        "weight": 10,
+        "segment": 1
+      },
+      {
+        "id": "f7",
+        "category": "logic",
+        "label": "因为小巴座位少，所以需要长时间排队",
+        "weight": 10,
+        "segment": 3
+      }
+    ]
+  },
+  {
+    "id": "hbl-outing-3",
+    "title": "最后的决定",
+    "level": "入门",
+    "rubricVersion": "1",
+    "source": {
+      "name": "Storybooks HamBaangLaang · 出街玩",
+      "url": "https://global-asp.github.io/storybooks-hbl/stories/yue/00001/",
+      "attribution": "雞先生、魚魚老師创作；Edwin 朗读；Storybooks HamBaangLaang 提供音频。",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "segments": [
+      {
+        "audioUrl": "/listening-audio/hbl-00001-10.mp3",
+        "text": "An鴨話：「噉我哋可唔可以踩單車去呢？」",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/10.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-11.mp3",
+        "text": "但係佢哋對腳太短喇，踩唔到單車。",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/11.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-12.mp3",
+        "text": "最後佢哋發現，原來附近有巴士站呀！可以搭巴士去呀！",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/12.mp3"
+      },
+      {
+        "audioUrl": "/listening-audio/hbl-00001-13.mp3",
+        "text": "嘟咗八達通，坐好巴士，佢哋出街玩喇！",
+        "originalAudioUrl": "https://raw.githubusercontent.com/global-asp/hbl-audio/master/audio/yue/00001/mp3/13.mp3"
+      }
+    ],
+    "reference": "两位朋友考虑骑自行车，但因为腿太短骑不了。后来发现附近有公交站，最后刷八达通乘公交车出去玩。",
+    "facts": [
+      {
+        "id": "f1",
+        "category": "main",
+        "label": "理解两位朋友找到可行的出行办法并出发（不要求说出具体交通工具）",
+        "weight": 40,
+        "segment": 2
+      },
+      {
+        "id": "f2",
+        "category": "detail",
+        "label": "曾考虑骑自行车",
+        "weight": 10,
+        "segment": 0
+      },
+      {
+        "id": "f3",
+        "category": "detail",
+        "label": "最后选择乘公交车",
+        "weight": 10,
+        "segment": 2
+      },
+      {
+        "id": "f4",
+        "category": "detail",
+        "label": "附近有公交站",
+        "weight": 10,
+        "segment": 2
+      },
+      {
+        "id": "f5",
+        "category": "detail",
+        "label": "刷八达通乘车",
+        "weight": 10,
+        "segment": 3
+      },
+      {
+        "id": "f6",
+        "category": "logic",
+        "label": "因为腿太短，所以无法骑自行车",
+        "weight": 20,
+        "segment": 1
+      }
+    ]
+  }
+]

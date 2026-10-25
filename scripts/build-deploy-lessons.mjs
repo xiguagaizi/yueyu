@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { splitAnnotatedSentences } from '../lib/lesson-source.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'robot', 'resource');
@@ -18,14 +19,6 @@ function cleanSentence(raw) {
     .replace(/[\s\u3000]+/g, '')
     .replace(/^[\uff1a:\u3001,\uff0c.\u3002\uff0e\u00b7\-\u2014]+/, '')
     .trim();
-}
-
-function splitSentences(cantonese) {
-  const cleaned = cleanSentence(cantonese);
-  return cleaned
-    .split(/(?<=[。！？!?；;])/)
-    .map((s) => s.replace(/[、,，\uff0c]+$/, '').trim())
-    .filter((s) => s.length > 1);
 }
 
 if (!fs.existsSync(SRC)) {
@@ -67,10 +60,9 @@ for (const [i, date] of dates.entries()) {
   }
 
   const chineseTitle = cleanSentence(data.chinese || '').slice(0, 20);
-  const sentences = splitSentences(data.cantonese).map((text, j) => ({
+  const sentences = splitAnnotatedSentences(data.cantonese).map((sentence, j) => ({
     id: `${day}-${j + 1}`,
-    text,
-    raw: text,
+    ...sentence,
   }));
   if (!sentences.length) continue;
 

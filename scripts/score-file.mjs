@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyze, TONE_NAMES } from '../lib/jyutping.mjs';
+import { gradeCantonese } from '../lib/pronunciation-score.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 try {
@@ -58,8 +58,11 @@ try {
 console.log(JSON.stringify(data, null, 2));
 
 if (language === 'cantonese' && (data.expectedJyutping || data.transcribedJyutping)) {
-  const a = analyze(data.expectedJyutping, data.transcribedJyutping, text);
-  console.log('\n逐音节纠音:');
+  const grading = gradeCantonese({ text, upstreamExpectedJyutping: data.expectedJyutping,
+    transcribedJyutping: data.transcribedJyutping, upstreamScore: Number(data.score ?? 0) });
+  const a = grading.analysis;
+  console.log(`\n粤拼相似度 ${grading.score} 分 · ${grading.passed ? '已通过' : '未通过'} · 接口原分 ${grading.upstreamScore} 分`);
+  console.log('\n识别读音差异（请结合录音复听）:');
   for (const it of a.items) {
     const mark = it.kind === 'ok' ? '✓' : '✗';
     console.log(`  ${mark} ${it.char || ' '} ${String(it.expected || '—').padEnd(8)} → ${String(it.actual || '(没听到)').padEnd(8)} ${it.label}${it.hint ? ' | ' + it.hint : ''}`);

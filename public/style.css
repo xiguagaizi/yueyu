@@ -15,6 +15,61 @@
   color-scheme: dark;
 }
 
+.listening-view { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 18px; max-width: 1200px; margin: 0 auto; padding: 20px; align-items: start; }
+.listening-view[hidden], .listening-view [hidden] { display: none !important; }
+.listening-sidebar, .listening-card { padding: 22px; }
+.listening-workbench { display: grid; gap: 16px; min-width: 0; }
+.listening-task-list { display: grid; gap: 10px; margin-top: 18px; }
+.listening-task { text-align: left; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); cursor: pointer; }
+.listening-task.on { border-color: var(--accent); box-shadow: inset 3px 0 var(--accent); }
+.listening-task span { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
+.listening-view audio { width: 100%; margin: 8px 0; }
+.listening-player-tools, .listening-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 12px 0; }
+.listening-source { padding-top: 14px; border-top: 1px solid var(--line); }
+.listening-source a { color: var(--muted); text-decoration: underline; }
+.listening-library-link { color: var(--accent); font-size: 13px; }
+.listening-upload { cursor: pointer; display: inline-block; }
+.listening-upload:has(input:disabled) { opacity: .5; cursor: default; }
+.listening-text-label { display: block; margin: 16px 0 8px; font-weight: 600; }
+.listening-view textarea { width: 100%; resize: vertical; font: inherit; color: var(--text); background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.listening-view textarea:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.listening-view textarea[readonly] { opacity: .8; }
+.listening-score-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.listening-score { font-size: 48px; font-weight: 750; color: var(--accent); white-space: nowrap; }
+.listening-score span { font-size: 14px; font-weight: 400; color: var(--muted); }
+.listening-breakdown { display: flex; flex-wrap: wrap; gap: 24px; border-block: 1px solid var(--line); padding: 12px 0; }
+.listening-breakdown b { color: var(--accent); }
+.listening-facts { list-style: none; padding: 0; display: grid; gap: 12px; }
+.listening-fact { border: 1px solid var(--line); border-left: 3px solid var(--warn); border-radius: 10px; padding: 14px; }
+.listening-fact.correct { border-left-color: var(--accent); }
+.listening-fact.wrong { border-left-color: var(--bad); }
+.listening-fact > div { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.listening-fact-status { color: var(--muted); font-size: 12px; }
+.listening-fact p { margin: 8px 0; font-size: 14px; }
+.listening-fact blockquote { margin: 8px 0; color: var(--muted); font-size: 13px; }
+.listening-reference { border-top: 1px solid var(--line); padding-top: 14px; }
+.listening-reference summary { cursor: pointer; color: var(--accent); }
+.listening-history { margin-top: 12px; }
+.listening-history-row { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 16px; text-align: left; padding: 14px 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; cursor: pointer; }
+.listening-history-row small { display: block; color: var(--muted); font-size: 12px; }
+.listening-history-row > b { color: var(--accent); white-space: nowrap; }
+.tabs .tab { white-space: nowrap; }
+@media (max-width: 760px) {
+  .listening-view { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 12px; }
+  .listening-sidebar, .listening-card { padding: 16px; }
+  .listening-task-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .listening-task { padding: 10px; }
+  .listening-task span { font-size: 11px; }
+  .listening-score { font-size: 38px; }
+}
+@media (max-width: 420px) {
+  .tabs { gap: 6px; }
+  .tabs .tab { padding: 6px 8px; }
+  .listening-task-list { grid-template-columns: minmax(0, 1fr); }
+  .listening-task { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .listening-task span { margin-top: 0; font-size: 10px; }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #f4f6fa;
@@ -245,6 +300,11 @@ body.resizing-layout {
 .count {
   color: var(--muted);
   font-size: 12px;
+}
+
+/* 统计行按段换行：每段整体不拆，「已打卡」不会被折成两行 */
+.count .stat-seg {
+  white-space: nowrap;
 }
 
 .lessons {
@@ -1054,10 +1114,17 @@ span.flatpickr-weekday {
   display: none;
 }
 
-.list-controls #sortOrder {
+.list-controls #sortOrder,
+.list-controls #practiceFilter {
   flex: none;
   padding: 4px 7px;
   white-space: nowrap;
+}
+
+/* 打卡日历选中的日期筛选标记：按打卡记录筛那天练过的课文 */
+.list-controls #practiceFilter {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
 }
 
 /* 侧边栏宽度参与容器查询：窄的时候筛选条收紧成一行（chips 轻扫，正序同排不换行） */
@@ -1091,7 +1158,8 @@ span.flatpickr-weekday {
     margin-left: 0;
   }
 
-  .list-controls #sortOrder {
+  .list-controls #sortOrder,
+  .list-controls #practiceFilter {
     padding: 4px 6px;
   }
 }
@@ -1148,6 +1216,8 @@ span.flatpickr-weekday {
   border-radius: 14px;
   border: 1px solid var(--line);
   background: var(--panel-2);
+  /* 点击展开/收起打卡日历的另一个入口 */
+  cursor: pointer;
 }
 
 .today-card .today-emoji {
@@ -1386,6 +1456,162 @@ span.flatpickr-weekday {
   padding: 0 12px 8px;
   font-size: 10.5px;
   color: var(--muted);
+}
+
+/* 打卡日历：点「全部日期」展开的块状月历。格子颜色 = 当天打卡篇数（与「今日打卡 N 篇」同口径），
+   浅色块 = 有练习但没完成整课；点格子筛选那一天的课文。 */
+.checkin-calendar {
+  flex: none;
+  margin: 0 2px 10px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--panel-2)), color-mix(in srgb, var(--accent-2) 6%, var(--panel-2)));
+  overflow: hidden;
+}
+
+.checkin-calendar .cc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px 2px;
+}
+
+.checkin-calendar .cc-title {
+  font-size: 12.5px;
+  font-weight: 750;
+  color: var(--text);
+}
+
+.checkin-calendar .cc-summary {
+  margin-left: 6px;
+  font-size: 10.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.checkin-calendar .cc-legend {
+  display: inline-flex;
+  gap: 3px;
+  flex: none;
+}
+
+.checkin-calendar .cc-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.checkin-calendar .cc-legend i:nth-child(1) {
+  background: color-mix(in srgb, var(--accent) 45%, var(--panel-2));
+}
+
+.checkin-calendar .cc-legend i:nth-child(2) {
+  background: color-mix(in srgb, var(--accent) 72%, var(--panel-2));
+}
+
+.checkin-calendar .cc-legend i:nth-child(3) {
+  background: var(--accent);
+}
+
+.checkin-calendar .cc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: min(46vh, 420px);
+  padding: 2px 10px 10px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.cc-month-head {
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.cc-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cc-wd {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
+}
+
+.cc-blank {
+  height: 26px;
+}
+
+.cc-day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--line) 40%, transparent);
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+/* 日期号统一缩在右上角；打卡的块中间再放当天篇数大数字 */
+.cc-day i {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-style: normal;
+  font-size: 8px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.cc-day.partial {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: color-mix(in srgb, var(--accent) 65%, var(--text));
+}
+
+.cc-day.has-count {
+  color: #fff;
+}
+
+.cc-day.has-count b {
+  font-size: 12.5px;
+  font-weight: 800;
+}
+
+.cc-day.lvl-1 {
+  background: color-mix(in srgb, var(--accent) 45%, var(--panel-2));
+}
+
+.cc-day.lvl-2 {
+  background: color-mix(in srgb, var(--accent) 72%, var(--panel-2));
+}
+
+.cc-day.lvl-3 {
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+}
+
+.cc-day.today {
+  box-shadow: 0 0 0 1.5px var(--accent-2);
+}
+
+.cc-day.selected {
+  box-shadow: 0 0 0 2px var(--text);
+}
+
+.cc-day:hover {
+  filter: brightness(1.12);
 }
 
 .day-list {
@@ -1791,6 +2017,22 @@ span.flatpickr-weekday {
   vertical-align: baseline;
 }
 
+/* 字上方粤拼注音（<ruby><rt>）：与整句连播同源，优先使用课文原注音。
+   字间留出间隙，注音才不会和邻字连成一串；rt 用等宽小字，颜色弱化。 */
+.sentence-text .article-char {
+  margin-right: 0.28em;
+}
+
+.article-char rt {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0;
+  padding: 0 1px;
+  color: var(--muted);
+  user-select: none;
+}
+
 .article-char:hover,
 .article-char:focus-visible,
 .article-char.speaking {
@@ -1866,6 +2108,7 @@ span.flatpickr-weekday {
   left: 0;
   bottom: calc(100% - 1px);
   display: flex;
+  flex-wrap: wrap;
   width: max-content;
   max-width: min(620px, 78vw);
   margin: 0;
@@ -1904,14 +2147,18 @@ span.flatpickr-weekday {
 }
 
 .article-sentence > .sentence-tools .sentence-status {
+  flex: 1 1 100%;
+  min-width: 0;
   min-height: 0;
-  max-width: 190px;
   margin: 0;
-  overflow: hidden;
   color: var(--muted);
   font-size: 11px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.article-sentence > .sentence-tools .sentence-status:empty {
+  display: none;
 }
 
 .article-sentence > .meter {
@@ -1945,6 +2192,12 @@ span.flatpickr-weekday {
 
 .batch-actions #scoreAllBtn {
   min-width: 220px;
+}
+
+/* 「评分未通过」窄按钮：和主按钮并排，只重评没通过的句子 */
+.batch-actions #scoreFailedBtn {
+  min-width: 0;
+  padding: 12px 16px;
 }
 
 .summary-result-sentence {
@@ -2049,6 +2302,14 @@ span.flatpickr-weekday {
   width: 100%;
 }
 
+.audio-recovery {
+  grid-column: 2;
+}
+
+.audio-recovery:has(span[hidden]):has(button[hidden]) {
+  display: none;
+}
+
 .demo-label {
   min-width: 0;
 }
@@ -2067,6 +2328,33 @@ span.flatpickr-weekday {
 
 .lesson-demo audio {
   height: 32px;
+}
+
+/* 「课文」标题行：标题 + 连读间隔；窄屏自动换行 */
+.lesson-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.gap-field input[type="range"] {
+  width: 130px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.gap-field output {
+  min-width: 48px;
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 移动端 .field.inline span 被压到 34px（同特异性但更靠后），这里加一档特异性压过它 */
+.lesson-title-row .field.gap-field span {
+  width: auto;
+  white-space: nowrap;
 }
 
 .practice-head {
@@ -2117,6 +2405,11 @@ span.flatpickr-weekday {
 .batch-actions #scoreAllBtn {
   min-width: 190px;
   padding: 10px 18px;
+}
+
+.batch-actions #scoreFailedBtn {
+  min-width: 0;
+  padding: 10px 14px;
 }
 
 .lesson-summary {
@@ -2221,7 +2514,8 @@ button,
     flex-direction: column;
   }
 
-  .batch-actions #scoreAllBtn {
+  .batch-actions #scoreAllBtn,
+  .batch-actions #scoreFailedBtn {
     width: 100%;
   }
 
@@ -2397,7 +2691,8 @@ button,
     backdrop-filter: blur(12px);
   }
 
-  .batch-actions #scoreAllBtn {
+  .batch-actions #scoreAllBtn,
+  .batch-actions #scoreFailedBtn {
     width: 100%;
     min-width: 0;
     min-height: 48px;
@@ -2777,13 +3072,256 @@ button.dict-char.speaking {
   font-size: 12.5px;
 }
 
+.dict-poly {
+  margin: 14px 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.dict-poly-head,
+.dict-reading-head,
+.dict-words {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dict-poly-head {
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dict-poly-head h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.dict-reading-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.dict-reading-row {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-2);
+}
+
+.dict-reading-row.current {
+  border-color: var(--accent);
+}
+
+.dict-reading-play {
+  cursor: pointer;
+  color: var(--accent);
+}
+
+.dict-reading-play:hover,
+.dict-reading-play:focus-visible {
+  border-color: var(--accent);
+}
+
+.dict-current-label {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--accent);
+}
+
+.dict-reading-meaning {
+  margin: 9px 0 5px;
+  font-weight: 600;
+}
+
+.dict-reading-usage {
+  margin: 0 0 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dict-senses {
+  margin: 8px 0 12px;
+  padding-left: 19px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.dict-senses li + li {
+  margin-top: 5px;
+}
+
+.dict-sense-example {
+  display: block;
+  color: var(--muted);
+}
+
+.dict-word-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.dict-word-item {
+  padding: 8px;
+  border-radius: 7px;
+  background: var(--panel);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.dict-word-item.compact {
+  padding: 3px 0;
+  background: transparent;
+}
+
+.dict-word-pos {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.dict-word-gloss,
+.dict-word-usage {
+  margin: 4px 0 0;
+}
+
+.dict-word-usage {
+  color: var(--muted);
+}
+
+.dict-word {
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: var(--panel);
+  font-size: 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+a.dict-word:hover,
+a.dict-word:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.dict-unchecked {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.dict-unchecked summary {
+  cursor: pointer;
+}
+
+.dict-unchecked .dict-reading-list {
+  margin-top: 10px;
+}
+
+.dict-source {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* 声调说明（字典下方） */
+.tones-card {
+  margin-top: 14px;
+  padding: 18px 20px;
+}
+
+.tones-text {
+  margin: 0 0 10px;
+  font-size: 14.5px;
+}
+
+.tones-figure {
+  margin: 0 0 14px;
+}
+
+.tones-svg {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  height: auto;
+}
+
+.tones-svg .plot-bg {
+  fill: var(--panel-2);
+}
+
+.tones-svg .grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.tones-svg .col-head {
+  fill: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tones-svg .axis-num,
+.tones-svg .axis-name {
+  fill: var(--muted);
+  font-size: 12px;
+}
+
+.tones-svg .contour {
+  stroke: var(--accent-2);
+  stroke-width: 5;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.tones-svg .contour-alt {
+  stroke: var(--muted);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1 8;
+  fill: none;
+}
+
+.tones-svg .contour-label {
+  fill: var(--muted);
+  font-size: 10.5px;
+}
+
+.tones-demo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tones-chars {
+  flex: 1;
+  min-width: 0;
+}
+
 @media (max-width: 760px) {
   .dict-view {
     padding: 10px 8px 28px;
   }
 
-  .dict-view .dict-card {
+  .dict-view .dict-card,
+  .dict-view .tones-card {
     padding: 12px;
+  }
+
+  .tones-demo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tones-demo .dict-play {
+    align-self: flex-start;
   }
 
   .dict-single {
