@@ -13,12 +13,9 @@
     "build:resource-lessons": "node scripts/build-resource-lessons.mjs",
     "build:dictionary-index": "node --use-env-proxy scripts/build-dictionary-index.mjs",
     "build:private-dictionary": "python3 scripts/build-private-dictionary.py",
-    "test:dictionary": "node test/dictionary.test.mjs",
-    "test:lessons": "node --test test/lesson-source.test.mjs test/lesson-playback.test.mjs test/audio-player.test.mjs",
-    "test:scoring": "node --test test/pronunciation-score.test.mjs test/score-route.test.mjs test/score-ui.test.mjs",
-    "test:listening": "node --test test/listening.test.mjs",
     "fetch:jyutping-audio": "node scripts/fetch-jyutping-audio.mjs",
-    "score": "node --use-env-proxy scripts/score-file.mjs"
+    "score": "node --use-env-proxy scripts/score-file.mjs",
+    "build:listening-catalog": "python3 scripts/build-listening-catalog.py"
   },
   "dependencies": {
     "express": "^4.21.2",

@@ -54,7 +54,7 @@ for (const date of dates) {
 }
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, JSON.stringify({ generatedFrom: SRC, lessons }, null, 2), 'utf8');
+fs.writeFileSync(OUT, JSON.stringify({ generatedFrom: SRC, lessons }) + '\n', 'utf8');
 
 const sentenceCount = lessons.reduce((total, lesson) => total + lesson.sentences.length, 0);
 const audioCount = lessons.filter((lesson) => lesson.audio).length;

@@ -22,7 +22,7 @@ function cleanSentence(raw) {
 }
 
 if (!fs.existsSync(SRC)) {
-  console.error(`找不到素材目录: ${SRC}，先跑 scripts/deploy-download.mjs`);
+  console.error(`找不到素材目录: ${SRC}，先配置 CHECKINS_API_TOKEN，再运行 scripts/_download-checkin-resources.mjs`);
   process.exit(1);
 }
 fs.mkdirSync(AUDIO_OUT, { recursive: true });

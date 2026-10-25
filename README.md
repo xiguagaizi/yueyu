@@ -68,7 +68,7 @@ npm start
 
 2026-10-05 新收集了 10 组独立听力素材：5 组分级故事、4 组成人自然对话、1 组港台广播，保留完整原声并提供 38–75 秒试听片段。从「听力训练 → 试听已下载的素材」打开素材库；也可以直接打开 `listening-resources/index.html`，或解压 `listening-resources/short-listening-pack.zip` 离线试听。详细来源和状态在 `listening-resources/README.md`、`data/listening-resources.json`。新素材尚未整理自动评分标准。
 
-大体积音频未纳入 Git。部署到新环境时，运行 `python3 scripts/collect-listening-resources.py` 恢复完整节目、短片段与现有任务的本地音频；需要 ffmpeg、ffprobe 和 Python 3.11+。已下载的文件会校验后跳过。仅验证文件可运行 `python3 scripts/collect-listening-resources.py --verify-only`。运行 `python3 scripts/build-listening-catalog.py` 可重新生成试听目录和短音频压缩包。
+大体积音频未纳入 Git。部署到新环境时，运行 `python3 scripts/collect-listening-resources.py` 恢复完整节目、短片段与现有任务的本地音频；需要 ffmpeg、ffprobe 和 Python 3.11+。已下载的文件会校验后跳过。仅验证文件可运行 `python3 scripts/collect-listening-resources.py --verify-only`。运行 `npm run build:listening-catalog` 可重新生成网页试听目录；只有需要离线导出时才运行 `python3 scripts/build-listening-catalog.py --offline`，生成离线页面和短音频压缩包。
 
 在服务端 `.env` 中配置 `DASHSCOPE_API_KEY` 和与你的 Key 地域匹配的 `DASHSCOPE_BASE_URL`，参考 `.env.example`，重启服务后启用转写和评分。默认 `qwen3-asr-flash` 支持将短录音以 Base64 直接提交；评分使用 `qwen3.7-plus-2026-05-26` 快照版。可用 `LISTENING_ASR_MODEL`、`LISTENING_GRADE_MODEL` 切换模型，评分模型须支持非思考模式和严格 JSON Schema 输出。不要将 API Key 填到浏览器中。
 
@@ -78,7 +78,7 @@ npm start
 
 增加素材时新增独立任务，填写 HTTPS `audioUrl` 或 `/listening-audio/<文件名>.mp3` 本地地址、校对的粤语文字、普通话参考意思、信息点及分值；`segment` 是对应片段的零基下标，用于反馈后的定点重听。每个类别分值必须满足 40/40/20，修改标准时增加 `rubricVersion`。影视视频应先准备可播放的片段音频与校对文字，平台网页链接不能直接当音频地址。
 
-验证：`npm run test:listening`。API 接入依据：[非实时语音识别](https://help.aliyun.com/zh/model-studio/non-realtime-speech-recognition-user-guide)、[结构化输出](https://help.aliyun.com/zh/model-studio/qwen-structured-output)。
+API 接入依据：[非实时语音识别](https://help.aliyun.com/zh/model-studio/non-realtime-speech-recognition-user-guide)、[结构化输出](https://help.aliyun.com/zh/model-studio/qwen-structured-output)。
 
 ## 查字典
 

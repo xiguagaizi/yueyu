@@ -10,9 +10,9 @@
 
 ## 试听与下载
 
-直接打开本目录的 `index.html` 可以离线试听。网页中「听力训练 → 试听已下载的素材」也能打开素材库。
+网页中「听力训练 → 试听已下载的素材」可以打开素材库。默认只生成网页目录。
 
-`short-listening-pack.zip` 包含全部 10 段短音频和可离线播放的目录，解压后打开 `index.html`；压缩包不包含完整原声。
+需要离线导出时运行 `python3 scripts/build-listening-catalog.py --offline`，才会生成 `index.html` 和 `short-listening-pack.zip`。压缩包包含 10 段短音频和离线目录，不含完整原声。
 
 ## 已下载清单
 
